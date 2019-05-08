@@ -1,0 +1,3349 @@
+Grammar:
+
+Rule 0     S' -> program
+Rule 1     program -> l_class
+Rule 2     l_class -> clase ; l_class
+Rule 3     l_class -> clase ;
+Rule 4     clase -> CLASS TYPEID herencia { l_feature }
+Rule 5     herencia -> empty
+Rule 6     herencia -> INHERITS TYPEID
+Rule 7     l_feature -> l_feature feature ;
+Rule 8     l_feature -> error ;
+Rule 9     l_feature -> empty
+Rule 10    feature -> OBJECTID : TYPEID inicializador
+Rule 11    feature -> OBJECTID ( l_formal ) : TYPEID { error }
+Rule 12    feature -> OBJECTID ( l_formal ) : TYPEID { expr }
+Rule 13    l_formal -> error ; formal
+Rule 14    l_formal -> l_formal , formal
+Rule 15    l_formal -> formal
+Rule 16    l_formal -> empty
+Rule 17    formal -> OBJECTID : TYPEID
+Rule 18    inicializador -> empty
+Rule 19    inicializador -> ASSIGN expr  [precedence=right, level=2]
+Rule 20    empty -> <empty>
+Rule 21    l_expr -> error ; l_expr
+Rule 22    l_expr -> expr ; l_expr
+Rule 23    l_expr -> empty
+Rule 24    expr -> BOOL_CONST
+Rule 25    expr -> STR_CONST
+Rule 26    expr -> INT_CONST
+Rule 27    expr -> OBJECTID
+Rule 28    expr -> ( expr )
+Rule 29    expr -> NOT expr  [precedence=right, level=3]
+Rule 30    expr -> expr = expr  [precedence=nonassoc, level=4]
+Rule 31    expr -> ~ expr  [precedence=right, level=10]
+Rule 32    expr -> expr / expr  [precedence=left, level=6]
+Rule 33    expr -> expr < expr  [precedence=nonassoc, level=4]
+Rule 34    expr -> expr LE expr  [precedence=nonassoc, level=4]
+Rule 35    expr -> expr * expr  [precedence=left, level=6]
+Rule 36    expr -> expr - expr  [precedence=left, level=5]
+Rule 37    expr -> expr + expr  [precedence=left, level=5]
+Rule 38    expr -> ISVOID expr  [precedence=right, level=7]
+Rule 39    expr -> NEW TYPEID
+Rule 40    expr -> CASE expr OF l_ramacase ESAC
+Rule 41    expr -> LET l_decl IN expr  [precedence=left, level=1]
+Rule 42    expr -> WHILE expr LOOP expr POOL
+Rule 43    expr -> IF expr THEN expr ELSE expr FI
+Rule 44    expr -> OBJECTID ( s_expr )
+Rule 45    expr -> expr @ TYPEID . OBJECTID ( s_expr )
+Rule 46    expr -> expr . OBJECTID ( s_expr )
+Rule 47    expr -> OBJECTID ASSIGN expr  [precedence=right, level=2]
+Rule 48    expr -> { error ; l_expr }
+Rule 49    expr -> { expr ; l_expr }
+Rule 50    lista_argumentos -> lista_argumentos , expr
+Rule 51    lista_argumentos -> expr
+Rule 52    s_expr -> empty
+Rule 53    s_expr -> lista_argumentos
+Rule 54    l_decl -> l_decl , decl
+Rule 55    l_decl -> error , decl
+Rule 56    l_decl -> decl
+Rule 57    decl -> OBJECTID : TYPEID inicializador
+Rule 58    ramacase -> OBJECTID : TYPEID DARROW expr ;
+Rule 59    l_ramacase -> l_ramacase ramacase
+Rule 60    l_ramacase -> ramacase
+
+Unused terminals:
+
+    LINECOMMENT
+    ERROR4
+    ERROR
+    COMENT
+    ERROR5
+    ERROR3
+    ERROR2
+    NUMBER
+    ERROR1
+    ERROR6
+
+Terminals, with rules where they appear:
+
+(                    : 11 12 28 44 45 46
+)                    : 11 12 28 44 45 46
+*                    : 35
++                    : 37
+,                    : 14 50 54 55
+-                    : 36
+.                    : 45 46
+/                    : 32
+:                    : 10 11 12 17 57 58
+;                    : 2 3 7 8 13 21 22 48 49 58
+<                    : 33
+=                    : 30
+@                    : 45
+ASSIGN               : 19 47
+BOOL_CONST           : 24
+CASE                 : 40
+CLASS                : 4
+COMENT               : 
+DARROW               : 58
+ELSE                 : 43
+ERROR                : 
+ERROR1               : 
+ERROR2               : 
+ERROR3               : 
+ERROR4               : 
+ERROR5               : 
+ERROR6               : 
+ESAC                 : 40
+FI                   : 43
+IF                   : 43
+IN                   : 41
+INHERITS             : 6
+INT_CONST            : 26
+ISVOID               : 38
+LE                   : 34
+LET                  : 41
+LINECOMMENT          : 
+LOOP                 : 42
+NEW                  : 39
+NOT                  : 29
+NUMBER               : 
+OBJECTID             : 10 11 12 17 27 44 45 46 47 57 58
+OF                   : 40
+POOL                 : 42
+STR_CONST            : 25
+THEN                 : 43
+TYPEID               : 4 6 10 11 12 17 39 45 57 58
+WHILE                : 42
+error                : 8 11 13 21 48 55
+{                    : 4 11 12 48 49
+}                    : 4 11 12 48 49
+~                    : 31
+
+Nonterminals, with rules where they appear:
+
+clase                : 2 3
+decl                 : 54 55 56
+empty                : 5 9 16 18 23 52
+expr                 : 12 19 22 28 29 30 30 31 32 32 33 33 34 34 35 35 36 36 37 37 38 40 41 42 42 43 43 43 45 46 47 49 50 51 58
+feature              : 7
+formal               : 13 14 15
+herencia             : 4
+inicializador        : 10 57
+l_class              : 1 2
+l_decl               : 41 54
+l_expr               : 21 22 48 49
+l_feature            : 4 7
+l_formal             : 11 12 14
+l_ramacase           : 40 59
+lista_argumentos     : 50 53
+program              : 0
+ramacase             : 59 60
+s_expr               : 44 45 46
+
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . l_class
+    (2) l_class -> . clase ; l_class
+    (3) l_class -> . clase ;
+    (4) clase -> . CLASS TYPEID herencia { l_feature }
+    CLASS           shift and go to state 4
+
+    program                        shift and go to state 1
+    l_class                        shift and go to state 2
+    clase                          shift and go to state 3
+
+state 1
+
+    (0) S' -> program .
+
+
+state 2
+
+    (1) program -> l_class .
+    $end            reduce using rule 1 (program -> l_class .)
+
+
+state 3
+
+    (2) l_class -> clase . ; l_class
+    (3) l_class -> clase . ;
+    ;               shift and go to state 5
+
+
+state 4
+
+    (4) clase -> CLASS . TYPEID herencia { l_feature }
+    TYPEID          shift and go to state 6
+
+
+state 5
+
+    (2) l_class -> clase ; . l_class
+    (3) l_class -> clase ; .
+    (2) l_class -> . clase ; l_class
+    (3) l_class -> . clase ;
+    (4) clase -> . CLASS TYPEID herencia { l_feature }
+    $end            reduce using rule 3 (l_class -> clase ; .)
+    CLASS           shift and go to state 4
+
+    clase                          shift and go to state 3
+    l_class                        shift and go to state 7
+
+state 6
+
+    (4) clase -> CLASS TYPEID . herencia { l_feature }
+    (5) herencia -> . empty
+    (6) herencia -> . INHERITS TYPEID
+    (20) empty -> .
+    INHERITS        shift and go to state 10
+    {               reduce using rule 20 (empty -> .)
+
+    herencia                       shift and go to state 8
+    empty                          shift and go to state 9
+
+state 7
+
+    (2) l_class -> clase ; l_class .
+    $end            reduce using rule 2 (l_class -> clase ; l_class .)
+
+
+state 8
+
+    (4) clase -> CLASS TYPEID herencia . { l_feature }
+    {               shift and go to state 11
+
+
+state 9
+
+    (5) herencia -> empty .
+    {               reduce using rule 5 (herencia -> empty .)
+
+
+state 10
+
+    (6) herencia -> INHERITS . TYPEID
+    TYPEID          shift and go to state 12
+
+
+state 11
+
+    (4) clase -> CLASS TYPEID herencia { . l_feature }
+    (7) l_feature -> . l_feature feature ;
+    (8) l_feature -> . error ;
+    (9) l_feature -> . empty
+    (20) empty -> .
+    error           shift and go to state 14
+    }               reduce using rule 20 (empty -> .)
+    OBJECTID        reduce using rule 20 (empty -> .)
+
+    l_feature                      shift and go to state 13
+    empty                          shift and go to state 15
+
+state 12
+
+    (6) herencia -> INHERITS TYPEID .
+    {               reduce using rule 6 (herencia -> INHERITS TYPEID .)
+
+
+state 13
+
+    (4) clase -> CLASS TYPEID herencia { l_feature . }
+    (7) l_feature -> l_feature . feature ;
+    (10) feature -> . OBJECTID : TYPEID inicializador
+    (11) feature -> . OBJECTID ( l_formal ) : TYPEID { error }
+    (12) feature -> . OBJECTID ( l_formal ) : TYPEID { expr }
+    }               shift and go to state 16
+    OBJECTID        shift and go to state 18
+
+    feature                        shift and go to state 17
+
+state 14
+
+    (8) l_feature -> error . ;
+    ;               shift and go to state 19
+
+
+state 15
+
+    (9) l_feature -> empty .
+    }               reduce using rule 9 (l_feature -> empty .)
+    OBJECTID        reduce using rule 9 (l_feature -> empty .)
+
+
+state 16
+
+    (4) clase -> CLASS TYPEID herencia { l_feature } .
+    ;               reduce using rule 4 (clase -> CLASS TYPEID herencia { l_feature } .)
+
+
+state 17
+
+    (7) l_feature -> l_feature feature . ;
+    ;               shift and go to state 20
+
+
+state 18
+
+    (10) feature -> OBJECTID . : TYPEID inicializador
+    (11) feature -> OBJECTID . ( l_formal ) : TYPEID { error }
+    (12) feature -> OBJECTID . ( l_formal ) : TYPEID { expr }
+    :               shift and go to state 21
+    (               shift and go to state 22
+
+
+state 19
+
+    (8) l_feature -> error ; .
+    }               reduce using rule 8 (l_feature -> error ; .)
+    OBJECTID        reduce using rule 8 (l_feature -> error ; .)
+
+
+state 20
+
+    (7) l_feature -> l_feature feature ; .
+    }               reduce using rule 7 (l_feature -> l_feature feature ; .)
+    OBJECTID        reduce using rule 7 (l_feature -> l_feature feature ; .)
+
+
+state 21
+
+    (10) feature -> OBJECTID : . TYPEID inicializador
+    TYPEID          shift and go to state 23
+
+
+state 22
+
+    (11) feature -> OBJECTID ( . l_formal ) : TYPEID { error }
+    (12) feature -> OBJECTID ( . l_formal ) : TYPEID { expr }
+    (13) l_formal -> . error ; formal
+    (14) l_formal -> . l_formal , formal
+    (15) l_formal -> . formal
+    (16) l_formal -> . empty
+    (17) formal -> . OBJECTID : TYPEID
+    (20) empty -> .
+    error           shift and go to state 26
+    OBJECTID        shift and go to state 24
+    )               reduce using rule 20 (empty -> .)
+    ,               reduce using rule 20 (empty -> .)
+
+    l_formal                       shift and go to state 25
+    formal                         shift and go to state 27
+    empty                          shift and go to state 28
+
+state 23
+
+    (10) feature -> OBJECTID : TYPEID . inicializador
+    (18) inicializador -> . empty
+    (19) inicializador -> . ASSIGN expr
+    (20) empty -> .
+    ASSIGN          shift and go to state 31
+    ;               reduce using rule 20 (empty -> .)
+
+    inicializador                  shift and go to state 29
+    empty                          shift and go to state 30
+
+state 24
+
+    (17) formal -> OBJECTID . : TYPEID
+    :               shift and go to state 32
+
+
+state 25
+
+    (11) feature -> OBJECTID ( l_formal . ) : TYPEID { error }
+    (12) feature -> OBJECTID ( l_formal . ) : TYPEID { expr }
+    (14) l_formal -> l_formal . , formal
+    )               shift and go to state 33
+    ,               shift and go to state 34
+
+
+state 26
+
+    (13) l_formal -> error . ; formal
+    ;               shift and go to state 35
+
+
+state 27
+
+    (15) l_formal -> formal .
+    )               reduce using rule 15 (l_formal -> formal .)
+    ,               reduce using rule 15 (l_formal -> formal .)
+
+
+state 28
+
+    (16) l_formal -> empty .
+    )               reduce using rule 16 (l_formal -> empty .)
+    ,               reduce using rule 16 (l_formal -> empty .)
+
+
+state 29
+
+    (10) feature -> OBJECTID : TYPEID inicializador .
+    ;               reduce using rule 10 (feature -> OBJECTID : TYPEID inicializador .)
+
+
+state 30
+
+    (18) inicializador -> empty .
+    ;               reduce using rule 18 (inicializador -> empty .)
+    IN              reduce using rule 18 (inicializador -> empty .)
+    ,               reduce using rule 18 (inicializador -> empty .)
+
+
+state 31
+
+    (19) inicializador -> ASSIGN . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 36
+
+state 32
+
+    (17) formal -> OBJECTID : . TYPEID
+    TYPEID          shift and go to state 51
+
+
+state 33
+
+    (11) feature -> OBJECTID ( l_formal ) . : TYPEID { error }
+    (12) feature -> OBJECTID ( l_formal ) . : TYPEID { expr }
+    :               shift and go to state 52
+
+
+state 34
+
+    (14) l_formal -> l_formal , . formal
+    (17) formal -> . OBJECTID : TYPEID
+    OBJECTID        shift and go to state 24
+
+    formal                         shift and go to state 53
+
+state 35
+
+    (13) l_formal -> error ; . formal
+    (17) formal -> . OBJECTID : TYPEID
+    OBJECTID        shift and go to state 24
+
+    formal                         shift and go to state 54
+
+state 36
+
+    (19) inicializador -> ASSIGN expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    ;               reduce using rule 19 (inicializador -> ASSIGN expr .)
+    IN              reduce using rule 19 (inicializador -> ASSIGN expr .)
+    ,               reduce using rule 19 (inicializador -> ASSIGN expr .)
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 37
+
+    (24) expr -> BOOL_CONST .
+    =               reduce using rule 24 (expr -> BOOL_CONST .)
+    /               reduce using rule 24 (expr -> BOOL_CONST .)
+    <               reduce using rule 24 (expr -> BOOL_CONST .)
+    LE              reduce using rule 24 (expr -> BOOL_CONST .)
+    *               reduce using rule 24 (expr -> BOOL_CONST .)
+    -               reduce using rule 24 (expr -> BOOL_CONST .)
+    +               reduce using rule 24 (expr -> BOOL_CONST .)
+    @               reduce using rule 24 (expr -> BOOL_CONST .)
+    .               reduce using rule 24 (expr -> BOOL_CONST .)
+    ;               reduce using rule 24 (expr -> BOOL_CONST .)
+    IN              reduce using rule 24 (expr -> BOOL_CONST .)
+    ,               reduce using rule 24 (expr -> BOOL_CONST .)
+    )               reduce using rule 24 (expr -> BOOL_CONST .)
+    OF              reduce using rule 24 (expr -> BOOL_CONST .)
+    LOOP            reduce using rule 24 (expr -> BOOL_CONST .)
+    THEN            reduce using rule 24 (expr -> BOOL_CONST .)
+    POOL            reduce using rule 24 (expr -> BOOL_CONST .)
+    ELSE            reduce using rule 24 (expr -> BOOL_CONST .)
+    }               reduce using rule 24 (expr -> BOOL_CONST .)
+    FI              reduce using rule 24 (expr -> BOOL_CONST .)
+
+
+state 38
+
+    (25) expr -> STR_CONST .
+    =               reduce using rule 25 (expr -> STR_CONST .)
+    /               reduce using rule 25 (expr -> STR_CONST .)
+    <               reduce using rule 25 (expr -> STR_CONST .)
+    LE              reduce using rule 25 (expr -> STR_CONST .)
+    *               reduce using rule 25 (expr -> STR_CONST .)
+    -               reduce using rule 25 (expr -> STR_CONST .)
+    +               reduce using rule 25 (expr -> STR_CONST .)
+    @               reduce using rule 25 (expr -> STR_CONST .)
+    .               reduce using rule 25 (expr -> STR_CONST .)
+    ;               reduce using rule 25 (expr -> STR_CONST .)
+    IN              reduce using rule 25 (expr -> STR_CONST .)
+    ,               reduce using rule 25 (expr -> STR_CONST .)
+    )               reduce using rule 25 (expr -> STR_CONST .)
+    OF              reduce using rule 25 (expr -> STR_CONST .)
+    LOOP            reduce using rule 25 (expr -> STR_CONST .)
+    THEN            reduce using rule 25 (expr -> STR_CONST .)
+    POOL            reduce using rule 25 (expr -> STR_CONST .)
+    ELSE            reduce using rule 25 (expr -> STR_CONST .)
+    }               reduce using rule 25 (expr -> STR_CONST .)
+    FI              reduce using rule 25 (expr -> STR_CONST .)
+
+
+state 39
+
+    (26) expr -> INT_CONST .
+    =               reduce using rule 26 (expr -> INT_CONST .)
+    /               reduce using rule 26 (expr -> INT_CONST .)
+    <               reduce using rule 26 (expr -> INT_CONST .)
+    LE              reduce using rule 26 (expr -> INT_CONST .)
+    *               reduce using rule 26 (expr -> INT_CONST .)
+    -               reduce using rule 26 (expr -> INT_CONST .)
+    +               reduce using rule 26 (expr -> INT_CONST .)
+    @               reduce using rule 26 (expr -> INT_CONST .)
+    .               reduce using rule 26 (expr -> INT_CONST .)
+    ;               reduce using rule 26 (expr -> INT_CONST .)
+    IN              reduce using rule 26 (expr -> INT_CONST .)
+    ,               reduce using rule 26 (expr -> INT_CONST .)
+    )               reduce using rule 26 (expr -> INT_CONST .)
+    OF              reduce using rule 26 (expr -> INT_CONST .)
+    LOOP            reduce using rule 26 (expr -> INT_CONST .)
+    THEN            reduce using rule 26 (expr -> INT_CONST .)
+    POOL            reduce using rule 26 (expr -> INT_CONST .)
+    ELSE            reduce using rule 26 (expr -> INT_CONST .)
+    }               reduce using rule 26 (expr -> INT_CONST .)
+    FI              reduce using rule 26 (expr -> INT_CONST .)
+
+
+state 40
+
+    (27) expr -> OBJECTID .
+    (44) expr -> OBJECTID . ( s_expr )
+    (47) expr -> OBJECTID . ASSIGN expr
+    =               reduce using rule 27 (expr -> OBJECTID .)
+    /               reduce using rule 27 (expr -> OBJECTID .)
+    <               reduce using rule 27 (expr -> OBJECTID .)
+    LE              reduce using rule 27 (expr -> OBJECTID .)
+    *               reduce using rule 27 (expr -> OBJECTID .)
+    -               reduce using rule 27 (expr -> OBJECTID .)
+    +               reduce using rule 27 (expr -> OBJECTID .)
+    @               reduce using rule 27 (expr -> OBJECTID .)
+    .               reduce using rule 27 (expr -> OBJECTID .)
+    ;               reduce using rule 27 (expr -> OBJECTID .)
+    IN              reduce using rule 27 (expr -> OBJECTID .)
+    ,               reduce using rule 27 (expr -> OBJECTID .)
+    )               reduce using rule 27 (expr -> OBJECTID .)
+    OF              reduce using rule 27 (expr -> OBJECTID .)
+    LOOP            reduce using rule 27 (expr -> OBJECTID .)
+    THEN            reduce using rule 27 (expr -> OBJECTID .)
+    POOL            reduce using rule 27 (expr -> OBJECTID .)
+    ELSE            reduce using rule 27 (expr -> OBJECTID .)
+    }               reduce using rule 27 (expr -> OBJECTID .)
+    FI              reduce using rule 27 (expr -> OBJECTID .)
+    (               shift and go to state 64
+    ASSIGN          shift and go to state 65
+
+
+state 41
+
+    (28) expr -> ( . expr )
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 66
+
+state 42
+
+    (29) expr -> NOT . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 67
+
+state 43
+
+    (31) expr -> ~ . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 68
+
+state 44
+
+    (38) expr -> ISVOID . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 69
+
+state 45
+
+    (39) expr -> NEW . TYPEID
+    TYPEID          shift and go to state 70
+
+
+state 46
+
+    (40) expr -> CASE . expr OF l_ramacase ESAC
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 71
+
+state 47
+
+    (41) expr -> LET . l_decl IN expr
+    (54) l_decl -> . l_decl , decl
+    (55) l_decl -> . error , decl
+    (56) l_decl -> . decl
+    (57) decl -> . OBJECTID : TYPEID inicializador
+    error           shift and go to state 74
+    OBJECTID        shift and go to state 75
+
+    l_decl                         shift and go to state 72
+    decl                           shift and go to state 73
+
+state 48
+
+    (42) expr -> WHILE . expr LOOP expr POOL
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 76
+
+state 49
+
+    (43) expr -> IF . expr THEN expr ELSE expr FI
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 77
+
+state 50
+
+    (48) expr -> { . error ; l_expr }
+    (49) expr -> { . expr ; l_expr }
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    error           shift and go to state 78
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 79
+
+state 51
+
+    (17) formal -> OBJECTID : TYPEID .
+    )               reduce using rule 17 (formal -> OBJECTID : TYPEID .)
+    ,               reduce using rule 17 (formal -> OBJECTID : TYPEID .)
+
+
+state 52
+
+    (11) feature -> OBJECTID ( l_formal ) : . TYPEID { error }
+    (12) feature -> OBJECTID ( l_formal ) : . TYPEID { expr }
+    TYPEID          shift and go to state 80
+
+
+state 53
+
+    (14) l_formal -> l_formal , formal .
+    )               reduce using rule 14 (l_formal -> l_formal , formal .)
+    ,               reduce using rule 14 (l_formal -> l_formal , formal .)
+
+
+state 54
+
+    (13) l_formal -> error ; formal .
+    )               reduce using rule 13 (l_formal -> error ; formal .)
+    ,               reduce using rule 13 (l_formal -> error ; formal .)
+
+
+state 55
+
+    (30) expr -> expr = . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 81
+
+state 56
+
+    (32) expr -> expr / . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 82
+
+state 57
+
+    (33) expr -> expr < . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 83
+
+state 58
+
+    (34) expr -> expr LE . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 84
+
+state 59
+
+    (35) expr -> expr * . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 85
+
+state 60
+
+    (36) expr -> expr - . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 86
+
+state 61
+
+    (37) expr -> expr + . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 87
+
+state 62
+
+    (45) expr -> expr @ . TYPEID . OBJECTID ( s_expr )
+    TYPEID          shift and go to state 88
+
+
+state 63
+
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    OBJECTID        shift and go to state 89
+
+
+state 64
+
+    (44) expr -> OBJECTID ( . s_expr )
+    (52) s_expr -> . empty
+    (53) s_expr -> . lista_argumentos
+    (20) empty -> .
+    (50) lista_argumentos -> . lista_argumentos , expr
+    (51) lista_argumentos -> . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    )               reduce using rule 20 (empty -> .)
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    s_expr                         shift and go to state 90
+    empty                          shift and go to state 91
+    lista_argumentos               shift and go to state 92
+    expr                           shift and go to state 93
+
+state 65
+
+    (47) expr -> OBJECTID ASSIGN . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 94
+
+state 66
+
+    (28) expr -> ( expr . )
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    )               shift and go to state 95
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 67
+
+    (29) expr -> NOT expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    ;               reduce using rule 29 (expr -> NOT expr .)
+    IN              reduce using rule 29 (expr -> NOT expr .)
+    ,               reduce using rule 29 (expr -> NOT expr .)
+    )               reduce using rule 29 (expr -> NOT expr .)
+    OF              reduce using rule 29 (expr -> NOT expr .)
+    LOOP            reduce using rule 29 (expr -> NOT expr .)
+    THEN            reduce using rule 29 (expr -> NOT expr .)
+    POOL            reduce using rule 29 (expr -> NOT expr .)
+    ELSE            reduce using rule 29 (expr -> NOT expr .)
+    }               reduce using rule 29 (expr -> NOT expr .)
+    FI              reduce using rule 29 (expr -> NOT expr .)
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 68
+
+    (31) expr -> ~ expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    =               reduce using rule 31 (expr -> ~ expr .)
+    /               reduce using rule 31 (expr -> ~ expr .)
+    <               reduce using rule 31 (expr -> ~ expr .)
+    LE              reduce using rule 31 (expr -> ~ expr .)
+    *               reduce using rule 31 (expr -> ~ expr .)
+    -               reduce using rule 31 (expr -> ~ expr .)
+    +               reduce using rule 31 (expr -> ~ expr .)
+    @               reduce using rule 31 (expr -> ~ expr .)
+    .               reduce using rule 31 (expr -> ~ expr .)
+    ;               reduce using rule 31 (expr -> ~ expr .)
+    IN              reduce using rule 31 (expr -> ~ expr .)
+    ,               reduce using rule 31 (expr -> ~ expr .)
+    )               reduce using rule 31 (expr -> ~ expr .)
+    OF              reduce using rule 31 (expr -> ~ expr .)
+    LOOP            reduce using rule 31 (expr -> ~ expr .)
+    THEN            reduce using rule 31 (expr -> ~ expr .)
+    POOL            reduce using rule 31 (expr -> ~ expr .)
+    ELSE            reduce using rule 31 (expr -> ~ expr .)
+    }               reduce using rule 31 (expr -> ~ expr .)
+    FI              reduce using rule 31 (expr -> ~ expr .)
+
+
+state 69
+
+    (38) expr -> ISVOID expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    =               reduce using rule 38 (expr -> ISVOID expr .)
+    /               reduce using rule 38 (expr -> ISVOID expr .)
+    <               reduce using rule 38 (expr -> ISVOID expr .)
+    LE              reduce using rule 38 (expr -> ISVOID expr .)
+    *               reduce using rule 38 (expr -> ISVOID expr .)
+    -               reduce using rule 38 (expr -> ISVOID expr .)
+    +               reduce using rule 38 (expr -> ISVOID expr .)
+    ;               reduce using rule 38 (expr -> ISVOID expr .)
+    IN              reduce using rule 38 (expr -> ISVOID expr .)
+    ,               reduce using rule 38 (expr -> ISVOID expr .)
+    )               reduce using rule 38 (expr -> ISVOID expr .)
+    OF              reduce using rule 38 (expr -> ISVOID expr .)
+    LOOP            reduce using rule 38 (expr -> ISVOID expr .)
+    THEN            reduce using rule 38 (expr -> ISVOID expr .)
+    POOL            reduce using rule 38 (expr -> ISVOID expr .)
+    ELSE            reduce using rule 38 (expr -> ISVOID expr .)
+    }               reduce using rule 38 (expr -> ISVOID expr .)
+    FI              reduce using rule 38 (expr -> ISVOID expr .)
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 70
+
+    (39) expr -> NEW TYPEID .
+    =               reduce using rule 39 (expr -> NEW TYPEID .)
+    /               reduce using rule 39 (expr -> NEW TYPEID .)
+    <               reduce using rule 39 (expr -> NEW TYPEID .)
+    LE              reduce using rule 39 (expr -> NEW TYPEID .)
+    *               reduce using rule 39 (expr -> NEW TYPEID .)
+    -               reduce using rule 39 (expr -> NEW TYPEID .)
+    +               reduce using rule 39 (expr -> NEW TYPEID .)
+    @               reduce using rule 39 (expr -> NEW TYPEID .)
+    .               reduce using rule 39 (expr -> NEW TYPEID .)
+    ;               reduce using rule 39 (expr -> NEW TYPEID .)
+    IN              reduce using rule 39 (expr -> NEW TYPEID .)
+    ,               reduce using rule 39 (expr -> NEW TYPEID .)
+    )               reduce using rule 39 (expr -> NEW TYPEID .)
+    OF              reduce using rule 39 (expr -> NEW TYPEID .)
+    LOOP            reduce using rule 39 (expr -> NEW TYPEID .)
+    THEN            reduce using rule 39 (expr -> NEW TYPEID .)
+    POOL            reduce using rule 39 (expr -> NEW TYPEID .)
+    ELSE            reduce using rule 39 (expr -> NEW TYPEID .)
+    }               reduce using rule 39 (expr -> NEW TYPEID .)
+    FI              reduce using rule 39 (expr -> NEW TYPEID .)
+
+
+state 71
+
+    (40) expr -> CASE expr . OF l_ramacase ESAC
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    OF              shift and go to state 96
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 72
+
+    (41) expr -> LET l_decl . IN expr
+    (54) l_decl -> l_decl . , decl
+    IN              shift and go to state 97
+    ,               shift and go to state 98
+
+
+state 73
+
+    (56) l_decl -> decl .
+    IN              reduce using rule 56 (l_decl -> decl .)
+    ,               reduce using rule 56 (l_decl -> decl .)
+
+
+state 74
+
+    (55) l_decl -> error . , decl
+    ,               shift and go to state 99
+
+
+state 75
+
+    (57) decl -> OBJECTID . : TYPEID inicializador
+    :               shift and go to state 100
+
+
+state 76
+
+    (42) expr -> WHILE expr . LOOP expr POOL
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    LOOP            shift and go to state 101
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 77
+
+    (43) expr -> IF expr . THEN expr ELSE expr FI
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    THEN            shift and go to state 102
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 78
+
+    (48) expr -> { error . ; l_expr }
+    ;               shift and go to state 103
+
+
+state 79
+
+    (49) expr -> { expr . ; l_expr }
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    ;               shift and go to state 104
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 80
+
+    (11) feature -> OBJECTID ( l_formal ) : TYPEID . { error }
+    (12) feature -> OBJECTID ( l_formal ) : TYPEID . { expr }
+    {               shift and go to state 105
+
+
+state 81
+
+    (30) expr -> expr = expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    =               reduce using rule 30 (expr -> expr = expr .)
+    <               reduce using rule 30 (expr -> expr = expr .)
+    LE              reduce using rule 30 (expr -> expr = expr .)
+    ;               reduce using rule 30 (expr -> expr = expr .)
+    IN              reduce using rule 30 (expr -> expr = expr .)
+    ,               reduce using rule 30 (expr -> expr = expr .)
+    )               reduce using rule 30 (expr -> expr = expr .)
+    OF              reduce using rule 30 (expr -> expr = expr .)
+    LOOP            reduce using rule 30 (expr -> expr = expr .)
+    THEN            reduce using rule 30 (expr -> expr = expr .)
+    POOL            reduce using rule 30 (expr -> expr = expr .)
+    ELSE            reduce using rule 30 (expr -> expr = expr .)
+    }               reduce using rule 30 (expr -> expr = expr .)
+    FI              reduce using rule 30 (expr -> expr = expr .)
+    /               shift and go to state 56
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 82
+
+    (32) expr -> expr / expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    =               reduce using rule 32 (expr -> expr / expr .)
+    /               reduce using rule 32 (expr -> expr / expr .)
+    <               reduce using rule 32 (expr -> expr / expr .)
+    LE              reduce using rule 32 (expr -> expr / expr .)
+    *               reduce using rule 32 (expr -> expr / expr .)
+    -               reduce using rule 32 (expr -> expr / expr .)
+    +               reduce using rule 32 (expr -> expr / expr .)
+    ;               reduce using rule 32 (expr -> expr / expr .)
+    IN              reduce using rule 32 (expr -> expr / expr .)
+    ,               reduce using rule 32 (expr -> expr / expr .)
+    )               reduce using rule 32 (expr -> expr / expr .)
+    OF              reduce using rule 32 (expr -> expr / expr .)
+    LOOP            reduce using rule 32 (expr -> expr / expr .)
+    THEN            reduce using rule 32 (expr -> expr / expr .)
+    POOL            reduce using rule 32 (expr -> expr / expr .)
+    ELSE            reduce using rule 32 (expr -> expr / expr .)
+    }               reduce using rule 32 (expr -> expr / expr .)
+    FI              reduce using rule 32 (expr -> expr / expr .)
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 83
+
+    (33) expr -> expr < expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    =               reduce using rule 33 (expr -> expr < expr .)
+    <               reduce using rule 33 (expr -> expr < expr .)
+    LE              reduce using rule 33 (expr -> expr < expr .)
+    ;               reduce using rule 33 (expr -> expr < expr .)
+    IN              reduce using rule 33 (expr -> expr < expr .)
+    ,               reduce using rule 33 (expr -> expr < expr .)
+    )               reduce using rule 33 (expr -> expr < expr .)
+    OF              reduce using rule 33 (expr -> expr < expr .)
+    LOOP            reduce using rule 33 (expr -> expr < expr .)
+    THEN            reduce using rule 33 (expr -> expr < expr .)
+    POOL            reduce using rule 33 (expr -> expr < expr .)
+    ELSE            reduce using rule 33 (expr -> expr < expr .)
+    }               reduce using rule 33 (expr -> expr < expr .)
+    FI              reduce using rule 33 (expr -> expr < expr .)
+    /               shift and go to state 56
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 84
+
+    (34) expr -> expr LE expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    =               reduce using rule 34 (expr -> expr LE expr .)
+    <               reduce using rule 34 (expr -> expr LE expr .)
+    LE              reduce using rule 34 (expr -> expr LE expr .)
+    ;               reduce using rule 34 (expr -> expr LE expr .)
+    IN              reduce using rule 34 (expr -> expr LE expr .)
+    ,               reduce using rule 34 (expr -> expr LE expr .)
+    )               reduce using rule 34 (expr -> expr LE expr .)
+    OF              reduce using rule 34 (expr -> expr LE expr .)
+    LOOP            reduce using rule 34 (expr -> expr LE expr .)
+    THEN            reduce using rule 34 (expr -> expr LE expr .)
+    POOL            reduce using rule 34 (expr -> expr LE expr .)
+    ELSE            reduce using rule 34 (expr -> expr LE expr .)
+    }               reduce using rule 34 (expr -> expr LE expr .)
+    FI              reduce using rule 34 (expr -> expr LE expr .)
+    /               shift and go to state 56
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 85
+
+    (35) expr -> expr * expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    =               reduce using rule 35 (expr -> expr * expr .)
+    /               reduce using rule 35 (expr -> expr * expr .)
+    <               reduce using rule 35 (expr -> expr * expr .)
+    LE              reduce using rule 35 (expr -> expr * expr .)
+    *               reduce using rule 35 (expr -> expr * expr .)
+    -               reduce using rule 35 (expr -> expr * expr .)
+    +               reduce using rule 35 (expr -> expr * expr .)
+    ;               reduce using rule 35 (expr -> expr * expr .)
+    IN              reduce using rule 35 (expr -> expr * expr .)
+    ,               reduce using rule 35 (expr -> expr * expr .)
+    )               reduce using rule 35 (expr -> expr * expr .)
+    OF              reduce using rule 35 (expr -> expr * expr .)
+    LOOP            reduce using rule 35 (expr -> expr * expr .)
+    THEN            reduce using rule 35 (expr -> expr * expr .)
+    POOL            reduce using rule 35 (expr -> expr * expr .)
+    ELSE            reduce using rule 35 (expr -> expr * expr .)
+    }               reduce using rule 35 (expr -> expr * expr .)
+    FI              reduce using rule 35 (expr -> expr * expr .)
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 86
+
+    (36) expr -> expr - expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    =               reduce using rule 36 (expr -> expr - expr .)
+    <               reduce using rule 36 (expr -> expr - expr .)
+    LE              reduce using rule 36 (expr -> expr - expr .)
+    -               reduce using rule 36 (expr -> expr - expr .)
+    +               reduce using rule 36 (expr -> expr - expr .)
+    ;               reduce using rule 36 (expr -> expr - expr .)
+    IN              reduce using rule 36 (expr -> expr - expr .)
+    ,               reduce using rule 36 (expr -> expr - expr .)
+    )               reduce using rule 36 (expr -> expr - expr .)
+    OF              reduce using rule 36 (expr -> expr - expr .)
+    LOOP            reduce using rule 36 (expr -> expr - expr .)
+    THEN            reduce using rule 36 (expr -> expr - expr .)
+    POOL            reduce using rule 36 (expr -> expr - expr .)
+    ELSE            reduce using rule 36 (expr -> expr - expr .)
+    }               reduce using rule 36 (expr -> expr - expr .)
+    FI              reduce using rule 36 (expr -> expr - expr .)
+    /               shift and go to state 56
+    *               shift and go to state 59
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 87
+
+    (37) expr -> expr + expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    =               reduce using rule 37 (expr -> expr + expr .)
+    <               reduce using rule 37 (expr -> expr + expr .)
+    LE              reduce using rule 37 (expr -> expr + expr .)
+    -               reduce using rule 37 (expr -> expr + expr .)
+    +               reduce using rule 37 (expr -> expr + expr .)
+    ;               reduce using rule 37 (expr -> expr + expr .)
+    IN              reduce using rule 37 (expr -> expr + expr .)
+    ,               reduce using rule 37 (expr -> expr + expr .)
+    )               reduce using rule 37 (expr -> expr + expr .)
+    OF              reduce using rule 37 (expr -> expr + expr .)
+    LOOP            reduce using rule 37 (expr -> expr + expr .)
+    THEN            reduce using rule 37 (expr -> expr + expr .)
+    POOL            reduce using rule 37 (expr -> expr + expr .)
+    ELSE            reduce using rule 37 (expr -> expr + expr .)
+    }               reduce using rule 37 (expr -> expr + expr .)
+    FI              reduce using rule 37 (expr -> expr + expr .)
+    /               shift and go to state 56
+    *               shift and go to state 59
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 88
+
+    (45) expr -> expr @ TYPEID . . OBJECTID ( s_expr )
+    .               shift and go to state 106
+
+
+state 89
+
+    (46) expr -> expr . OBJECTID . ( s_expr )
+    (               shift and go to state 107
+
+
+state 90
+
+    (44) expr -> OBJECTID ( s_expr . )
+    )               shift and go to state 108
+
+
+state 91
+
+    (52) s_expr -> empty .
+    )               reduce using rule 52 (s_expr -> empty .)
+
+
+state 92
+
+    (53) s_expr -> lista_argumentos .
+    (50) lista_argumentos -> lista_argumentos . , expr
+    )               reduce using rule 53 (s_expr -> lista_argumentos .)
+    ,               shift and go to state 109
+
+
+state 93
+
+    (51) lista_argumentos -> expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    ,               reduce using rule 51 (lista_argumentos -> expr .)
+    )               reduce using rule 51 (lista_argumentos -> expr .)
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 94
+
+    (47) expr -> OBJECTID ASSIGN expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    ;               reduce using rule 47 (expr -> OBJECTID ASSIGN expr .)
+    IN              reduce using rule 47 (expr -> OBJECTID ASSIGN expr .)
+    ,               reduce using rule 47 (expr -> OBJECTID ASSIGN expr .)
+    )               reduce using rule 47 (expr -> OBJECTID ASSIGN expr .)
+    OF              reduce using rule 47 (expr -> OBJECTID ASSIGN expr .)
+    LOOP            reduce using rule 47 (expr -> OBJECTID ASSIGN expr .)
+    THEN            reduce using rule 47 (expr -> OBJECTID ASSIGN expr .)
+    POOL            reduce using rule 47 (expr -> OBJECTID ASSIGN expr .)
+    ELSE            reduce using rule 47 (expr -> OBJECTID ASSIGN expr .)
+    }               reduce using rule 47 (expr -> OBJECTID ASSIGN expr .)
+    FI              reduce using rule 47 (expr -> OBJECTID ASSIGN expr .)
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 95
+
+    (28) expr -> ( expr ) .
+    =               reduce using rule 28 (expr -> ( expr ) .)
+    /               reduce using rule 28 (expr -> ( expr ) .)
+    <               reduce using rule 28 (expr -> ( expr ) .)
+    LE              reduce using rule 28 (expr -> ( expr ) .)
+    *               reduce using rule 28 (expr -> ( expr ) .)
+    -               reduce using rule 28 (expr -> ( expr ) .)
+    +               reduce using rule 28 (expr -> ( expr ) .)
+    @               reduce using rule 28 (expr -> ( expr ) .)
+    .               reduce using rule 28 (expr -> ( expr ) .)
+    ;               reduce using rule 28 (expr -> ( expr ) .)
+    IN              reduce using rule 28 (expr -> ( expr ) .)
+    ,               reduce using rule 28 (expr -> ( expr ) .)
+    )               reduce using rule 28 (expr -> ( expr ) .)
+    OF              reduce using rule 28 (expr -> ( expr ) .)
+    LOOP            reduce using rule 28 (expr -> ( expr ) .)
+    THEN            reduce using rule 28 (expr -> ( expr ) .)
+    POOL            reduce using rule 28 (expr -> ( expr ) .)
+    ELSE            reduce using rule 28 (expr -> ( expr ) .)
+    }               reduce using rule 28 (expr -> ( expr ) .)
+    FI              reduce using rule 28 (expr -> ( expr ) .)
+
+
+state 96
+
+    (40) expr -> CASE expr OF . l_ramacase ESAC
+    (59) l_ramacase -> . l_ramacase ramacase
+    (60) l_ramacase -> . ramacase
+    (58) ramacase -> . OBJECTID : TYPEID DARROW expr ;
+    OBJECTID        shift and go to state 112
+
+    l_ramacase                     shift and go to state 110
+    ramacase                       shift and go to state 111
+
+state 97
+
+    (41) expr -> LET l_decl IN . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 113
+
+state 98
+
+    (54) l_decl -> l_decl , . decl
+    (57) decl -> . OBJECTID : TYPEID inicializador
+    OBJECTID        shift and go to state 75
+
+    decl                           shift and go to state 114
+
+state 99
+
+    (55) l_decl -> error , . decl
+    (57) decl -> . OBJECTID : TYPEID inicializador
+    OBJECTID        shift and go to state 75
+
+    decl                           shift and go to state 115
+
+state 100
+
+    (57) decl -> OBJECTID : . TYPEID inicializador
+    TYPEID          shift and go to state 116
+
+
+state 101
+
+    (42) expr -> WHILE expr LOOP . expr POOL
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 117
+
+state 102
+
+    (43) expr -> IF expr THEN . expr ELSE expr FI
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 118
+
+state 103
+
+    (48) expr -> { error ; . l_expr }
+    (21) l_expr -> . error ; l_expr
+    (22) l_expr -> . expr ; l_expr
+    (23) l_expr -> . empty
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    (20) empty -> .
+    error           shift and go to state 119
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+    }               reduce using rule 20 (empty -> .)
+
+    l_expr                         shift and go to state 120
+    expr                           shift and go to state 121
+    empty                          shift and go to state 122
+
+state 104
+
+    (49) expr -> { expr ; . l_expr }
+    (21) l_expr -> . error ; l_expr
+    (22) l_expr -> . expr ; l_expr
+    (23) l_expr -> . empty
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    (20) empty -> .
+    error           shift and go to state 119
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+    }               reduce using rule 20 (empty -> .)
+
+    expr                           shift and go to state 121
+    l_expr                         shift and go to state 123
+    empty                          shift and go to state 122
+
+state 105
+
+    (11) feature -> OBJECTID ( l_formal ) : TYPEID { . error }
+    (12) feature -> OBJECTID ( l_formal ) : TYPEID { . expr }
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    error           shift and go to state 124
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 125
+
+state 106
+
+    (45) expr -> expr @ TYPEID . . OBJECTID ( s_expr )
+    OBJECTID        shift and go to state 126
+
+
+state 107
+
+    (46) expr -> expr . OBJECTID ( . s_expr )
+    (52) s_expr -> . empty
+    (53) s_expr -> . lista_argumentos
+    (20) empty -> .
+    (50) lista_argumentos -> . lista_argumentos , expr
+    (51) lista_argumentos -> . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    )               reduce using rule 20 (empty -> .)
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 93
+    s_expr                         shift and go to state 127
+    empty                          shift and go to state 91
+    lista_argumentos               shift and go to state 92
+
+state 108
+
+    (44) expr -> OBJECTID ( s_expr ) .
+    =               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    /               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    <               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    LE              reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    *               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    -               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    +               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    @               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    .               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    ;               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    IN              reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    ,               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    )               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    OF              reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    LOOP            reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    THEN            reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    POOL            reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    ELSE            reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    }               reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+    FI              reduce using rule 44 (expr -> OBJECTID ( s_expr ) .)
+
+
+state 109
+
+    (50) lista_argumentos -> lista_argumentos , . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 128
+
+state 110
+
+    (40) expr -> CASE expr OF l_ramacase . ESAC
+    (59) l_ramacase -> l_ramacase . ramacase
+    (58) ramacase -> . OBJECTID : TYPEID DARROW expr ;
+    ESAC            shift and go to state 129
+    OBJECTID        shift and go to state 112
+
+    ramacase                       shift and go to state 130
+
+state 111
+
+    (60) l_ramacase -> ramacase .
+    ESAC            reduce using rule 60 (l_ramacase -> ramacase .)
+    OBJECTID        reduce using rule 60 (l_ramacase -> ramacase .)
+
+
+state 112
+
+    (58) ramacase -> OBJECTID . : TYPEID DARROW expr ;
+    :               shift and go to state 131
+
+
+state 113
+
+    (41) expr -> LET l_decl IN expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    ;               reduce using rule 41 (expr -> LET l_decl IN expr .)
+    IN              reduce using rule 41 (expr -> LET l_decl IN expr .)
+    ,               reduce using rule 41 (expr -> LET l_decl IN expr .)
+    )               reduce using rule 41 (expr -> LET l_decl IN expr .)
+    OF              reduce using rule 41 (expr -> LET l_decl IN expr .)
+    LOOP            reduce using rule 41 (expr -> LET l_decl IN expr .)
+    THEN            reduce using rule 41 (expr -> LET l_decl IN expr .)
+    POOL            reduce using rule 41 (expr -> LET l_decl IN expr .)
+    ELSE            reduce using rule 41 (expr -> LET l_decl IN expr .)
+    }               reduce using rule 41 (expr -> LET l_decl IN expr .)
+    FI              reduce using rule 41 (expr -> LET l_decl IN expr .)
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 114
+
+    (54) l_decl -> l_decl , decl .
+    IN              reduce using rule 54 (l_decl -> l_decl , decl .)
+    ,               reduce using rule 54 (l_decl -> l_decl , decl .)
+
+
+state 115
+
+    (55) l_decl -> error , decl .
+    IN              reduce using rule 55 (l_decl -> error , decl .)
+    ,               reduce using rule 55 (l_decl -> error , decl .)
+
+
+state 116
+
+    (57) decl -> OBJECTID : TYPEID . inicializador
+    (18) inicializador -> . empty
+    (19) inicializador -> . ASSIGN expr
+    (20) empty -> .
+    ASSIGN          shift and go to state 31
+    IN              reduce using rule 20 (empty -> .)
+    ,               reduce using rule 20 (empty -> .)
+
+    inicializador                  shift and go to state 132
+    empty                          shift and go to state 30
+
+state 117
+
+    (42) expr -> WHILE expr LOOP expr . POOL
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    POOL            shift and go to state 133
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 118
+
+    (43) expr -> IF expr THEN expr . ELSE expr FI
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    ELSE            shift and go to state 134
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 119
+
+    (21) l_expr -> error . ; l_expr
+    ;               shift and go to state 135
+
+
+state 120
+
+    (48) expr -> { error ; l_expr . }
+    }               shift and go to state 136
+
+
+state 121
+
+    (22) l_expr -> expr . ; l_expr
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    ;               shift and go to state 137
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 122
+
+    (23) l_expr -> empty .
+    }               reduce using rule 23 (l_expr -> empty .)
+
+
+state 123
+
+    (49) expr -> { expr ; l_expr . }
+    }               shift and go to state 138
+
+
+state 124
+
+    (11) feature -> OBJECTID ( l_formal ) : TYPEID { error . }
+    }               shift and go to state 139
+
+
+state 125
+
+    (12) feature -> OBJECTID ( l_formal ) : TYPEID { expr . }
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    }               shift and go to state 140
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 126
+
+    (45) expr -> expr @ TYPEID . OBJECTID . ( s_expr )
+    (               shift and go to state 141
+
+
+state 127
+
+    (46) expr -> expr . OBJECTID ( s_expr . )
+    )               shift and go to state 142
+
+
+state 128
+
+    (50) lista_argumentos -> lista_argumentos , expr .
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    ,               reduce using rule 50 (lista_argumentos -> lista_argumentos , expr .)
+    )               reduce using rule 50 (lista_argumentos -> lista_argumentos , expr .)
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 129
+
+    (40) expr -> CASE expr OF l_ramacase ESAC .
+    =               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    /               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    <               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    LE              reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    *               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    -               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    +               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    @               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    .               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    ;               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    IN              reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    ,               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    )               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    OF              reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    LOOP            reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    THEN            reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    POOL            reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    ELSE            reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    }               reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+    FI              reduce using rule 40 (expr -> CASE expr OF l_ramacase ESAC .)
+
+
+state 130
+
+    (59) l_ramacase -> l_ramacase ramacase .
+    ESAC            reduce using rule 59 (l_ramacase -> l_ramacase ramacase .)
+    OBJECTID        reduce using rule 59 (l_ramacase -> l_ramacase ramacase .)
+
+
+state 131
+
+    (58) ramacase -> OBJECTID : . TYPEID DARROW expr ;
+    TYPEID          shift and go to state 143
+
+
+state 132
+
+    (57) decl -> OBJECTID : TYPEID inicializador .
+    IN              reduce using rule 57 (decl -> OBJECTID : TYPEID inicializador .)
+    ,               reduce using rule 57 (decl -> OBJECTID : TYPEID inicializador .)
+
+
+state 133
+
+    (42) expr -> WHILE expr LOOP expr POOL .
+    =               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    /               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    <               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    LE              reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    *               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    -               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    +               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    @               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    .               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    ;               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    IN              reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    ,               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    )               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    OF              reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    LOOP            reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    THEN            reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    POOL            reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    ELSE            reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    }               reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+    FI              reduce using rule 42 (expr -> WHILE expr LOOP expr POOL .)
+
+
+state 134
+
+    (43) expr -> IF expr THEN expr ELSE . expr FI
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 144
+
+state 135
+
+    (21) l_expr -> error ; . l_expr
+    (21) l_expr -> . error ; l_expr
+    (22) l_expr -> . expr ; l_expr
+    (23) l_expr -> . empty
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    (20) empty -> .
+    error           shift and go to state 119
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+    }               reduce using rule 20 (empty -> .)
+
+    l_expr                         shift and go to state 145
+    expr                           shift and go to state 121
+    empty                          shift and go to state 122
+
+state 136
+
+    (48) expr -> { error ; l_expr } .
+    =               reduce using rule 48 (expr -> { error ; l_expr } .)
+    /               reduce using rule 48 (expr -> { error ; l_expr } .)
+    <               reduce using rule 48 (expr -> { error ; l_expr } .)
+    LE              reduce using rule 48 (expr -> { error ; l_expr } .)
+    *               reduce using rule 48 (expr -> { error ; l_expr } .)
+    -               reduce using rule 48 (expr -> { error ; l_expr } .)
+    +               reduce using rule 48 (expr -> { error ; l_expr } .)
+    @               reduce using rule 48 (expr -> { error ; l_expr } .)
+    .               reduce using rule 48 (expr -> { error ; l_expr } .)
+    ;               reduce using rule 48 (expr -> { error ; l_expr } .)
+    IN              reduce using rule 48 (expr -> { error ; l_expr } .)
+    ,               reduce using rule 48 (expr -> { error ; l_expr } .)
+    )               reduce using rule 48 (expr -> { error ; l_expr } .)
+    OF              reduce using rule 48 (expr -> { error ; l_expr } .)
+    LOOP            reduce using rule 48 (expr -> { error ; l_expr } .)
+    THEN            reduce using rule 48 (expr -> { error ; l_expr } .)
+    POOL            reduce using rule 48 (expr -> { error ; l_expr } .)
+    ELSE            reduce using rule 48 (expr -> { error ; l_expr } .)
+    }               reduce using rule 48 (expr -> { error ; l_expr } .)
+    FI              reduce using rule 48 (expr -> { error ; l_expr } .)
+
+
+state 137
+
+    (22) l_expr -> expr ; . l_expr
+    (21) l_expr -> . error ; l_expr
+    (22) l_expr -> . expr ; l_expr
+    (23) l_expr -> . empty
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    (20) empty -> .
+    error           shift and go to state 119
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+    }               reduce using rule 20 (empty -> .)
+
+    expr                           shift and go to state 121
+    l_expr                         shift and go to state 146
+    empty                          shift and go to state 122
+
+state 138
+
+    (49) expr -> { expr ; l_expr } .
+    =               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    /               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    <               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    LE              reduce using rule 49 (expr -> { expr ; l_expr } .)
+    *               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    -               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    +               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    @               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    .               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    ;               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    IN              reduce using rule 49 (expr -> { expr ; l_expr } .)
+    ,               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    )               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    OF              reduce using rule 49 (expr -> { expr ; l_expr } .)
+    LOOP            reduce using rule 49 (expr -> { expr ; l_expr } .)
+    THEN            reduce using rule 49 (expr -> { expr ; l_expr } .)
+    POOL            reduce using rule 49 (expr -> { expr ; l_expr } .)
+    ELSE            reduce using rule 49 (expr -> { expr ; l_expr } .)
+    }               reduce using rule 49 (expr -> { expr ; l_expr } .)
+    FI              reduce using rule 49 (expr -> { expr ; l_expr } .)
+
+
+state 139
+
+    (11) feature -> OBJECTID ( l_formal ) : TYPEID { error } .
+    ;               reduce using rule 11 (feature -> OBJECTID ( l_formal ) : TYPEID { error } .)
+
+
+state 140
+
+    (12) feature -> OBJECTID ( l_formal ) : TYPEID { expr } .
+    ;               reduce using rule 12 (feature -> OBJECTID ( l_formal ) : TYPEID { expr } .)
+
+
+state 141
+
+    (45) expr -> expr @ TYPEID . OBJECTID ( . s_expr )
+    (52) s_expr -> . empty
+    (53) s_expr -> . lista_argumentos
+    (20) empty -> .
+    (50) lista_argumentos -> . lista_argumentos , expr
+    (51) lista_argumentos -> . expr
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    )               reduce using rule 20 (empty -> .)
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 93
+    s_expr                         shift and go to state 147
+    empty                          shift and go to state 91
+    lista_argumentos               shift and go to state 92
+
+state 142
+
+    (46) expr -> expr . OBJECTID ( s_expr ) .
+    =               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    /               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    <               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    LE              reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    *               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    -               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    +               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    @               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    .               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    ;               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    IN              reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    ,               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    )               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    OF              reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    LOOP            reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    THEN            reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    POOL            reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    ELSE            reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    }               reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+    FI              reduce using rule 46 (expr -> expr . OBJECTID ( s_expr ) .)
+
+
+state 143
+
+    (58) ramacase -> OBJECTID : TYPEID . DARROW expr ;
+    DARROW          shift and go to state 148
+
+
+state 144
+
+    (43) expr -> IF expr THEN expr ELSE expr . FI
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    FI              shift and go to state 149
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 145
+
+    (21) l_expr -> error ; l_expr .
+    }               reduce using rule 21 (l_expr -> error ; l_expr .)
+
+
+state 146
+
+    (22) l_expr -> expr ; l_expr .
+    }               reduce using rule 22 (l_expr -> expr ; l_expr .)
+
+
+state 147
+
+    (45) expr -> expr @ TYPEID . OBJECTID ( s_expr . )
+    )               shift and go to state 150
+
+
+state 148
+
+    (58) ramacase -> OBJECTID : TYPEID DARROW . expr ;
+    (24) expr -> . BOOL_CONST
+    (25) expr -> . STR_CONST
+    (26) expr -> . INT_CONST
+    (27) expr -> . OBJECTID
+    (28) expr -> . ( expr )
+    (29) expr -> . NOT expr
+    (30) expr -> . expr = expr
+    (31) expr -> . ~ expr
+    (32) expr -> . expr / expr
+    (33) expr -> . expr < expr
+    (34) expr -> . expr LE expr
+    (35) expr -> . expr * expr
+    (36) expr -> . expr - expr
+    (37) expr -> . expr + expr
+    (38) expr -> . ISVOID expr
+    (39) expr -> . NEW TYPEID
+    (40) expr -> . CASE expr OF l_ramacase ESAC
+    (41) expr -> . LET l_decl IN expr
+    (42) expr -> . WHILE expr LOOP expr POOL
+    (43) expr -> . IF expr THEN expr ELSE expr FI
+    (44) expr -> . OBJECTID ( s_expr )
+    (45) expr -> . expr @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> . expr . OBJECTID ( s_expr )
+    (47) expr -> . OBJECTID ASSIGN expr
+    (48) expr -> . { error ; l_expr }
+    (49) expr -> . { expr ; l_expr }
+    BOOL_CONST      shift and go to state 37
+    STR_CONST       shift and go to state 38
+    INT_CONST       shift and go to state 39
+    OBJECTID        shift and go to state 40
+    (               shift and go to state 41
+    NOT             shift and go to state 42
+    ~               shift and go to state 43
+    ISVOID          shift and go to state 44
+    NEW             shift and go to state 45
+    CASE            shift and go to state 46
+    LET             shift and go to state 47
+    WHILE           shift and go to state 48
+    IF              shift and go to state 49
+    {               shift and go to state 50
+
+    expr                           shift and go to state 151
+
+state 149
+
+    (43) expr -> IF expr THEN expr ELSE expr FI .
+    =               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    /               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    <               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    LE              reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    *               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    -               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    +               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    @               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    .               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    ;               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    IN              reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    ,               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    )               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    OF              reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    LOOP            reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    THEN            reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    POOL            reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    ELSE            reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    }               reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+    FI              reduce using rule 43 (expr -> IF expr THEN expr ELSE expr FI .)
+
+
+state 150
+
+    (45) expr -> expr @ TYPEID . OBJECTID ( s_expr ) .
+    =               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    /               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    <               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    LE              reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    *               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    -               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    +               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    @               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    .               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    ;               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    IN              reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    ,               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    )               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    OF              reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    LOOP            reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    THEN            reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    POOL            reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    ELSE            reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    }               reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+    FI              reduce using rule 45 (expr -> expr @ TYPEID . OBJECTID ( s_expr ) .)
+
+
+state 151
+
+    (58) ramacase -> OBJECTID : TYPEID DARROW expr . ;
+    (30) expr -> expr . = expr
+    (32) expr -> expr . / expr
+    (33) expr -> expr . < expr
+    (34) expr -> expr . LE expr
+    (35) expr -> expr . * expr
+    (36) expr -> expr . - expr
+    (37) expr -> expr . + expr
+    (45) expr -> expr . @ TYPEID . OBJECTID ( s_expr )
+    (46) expr -> expr . . OBJECTID ( s_expr )
+    ;               shift and go to state 152
+    =               shift and go to state 55
+    /               shift and go to state 56
+    <               shift and go to state 57
+    LE              shift and go to state 58
+    *               shift and go to state 59
+    -               shift and go to state 60
+    +               shift and go to state 61
+    @               shift and go to state 62
+    .               shift and go to state 63
+
+
+state 152
+
+    (58) ramacase -> OBJECTID : TYPEID DARROW expr ; .
+    ESAC            reduce using rule 58 (ramacase -> OBJECTID : TYPEID DARROW expr ; .)
+    OBJECTID        reduce using rule 58 (ramacase -> OBJECTID : TYPEID DARROW expr ; .)
