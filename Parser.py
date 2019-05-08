@@ -5,8 +5,8 @@ from sly import Parser
 import sys
 import os
 from Clases import *
-DIRECTORIO = os.path.join("C:/Users/anton/Desktop/LenguajesProgramacion/practica2/")
-#DIRECTORIO = os.path.join("C:/Users/USUARIO/parser/")
+#DIRECTORIO = os.path.join("C:/Users/anton/Desktop/LenguajesProgramacion/practica2/")
+DIRECTORIO = os.path.join("C:/Users/USUARIO/parser/")
 
 sys.path.append(DIRECTORIO)
 
@@ -16,6 +16,35 @@ FICHEROS = os.listdir(GRADING)
 TESTS = [fich for fich in FICHEROS
          if os.path.isfile(os.path.join(GRADING, fich))
          and fich.endswith(".test")]
+class ArbolClases():
+    self.raiz = None
+    self.tamano = 0
+    def __init__ (self, raiz):
+         self.raiz=raiz
+         self.tamano += 1
+    def buscaNodo(self,valor):
+        def obtener(self,clave):
+        if self.raiz:
+            res = self._obtener(clave,self.raiz)
+            if res:
+                return res.cargaUtil
+            else:
+                return None
+        else:
+            return None
+    def creaNodo(self,padre,valor):
+        if self.raiz:
+            self._agregar(clave,valor,self.raiz)
+        else:
+            self.raiz = NodoArbol(clave,valor)
+            self.tamano = self.tamano + 1
+
+class Nodo:
+    def __init__ (self, dato):
+        self.dato = dato
+        self.hijos = list()
+    def anhadeHijo(self,nodo):
+        self.hijos.append(nodo)
 
 class CoolParser(Parser):
     nombre_fichero = "Salida"
@@ -193,7 +222,7 @@ class CoolParser(Parser):
 
     @_('NEW TYPEID')
     def expr(self, p):
-        return Nueva(p.lineno,p.TYPEID)
+        return Nueva(p.lineno,TYPEID,p.TYPEID)
 
     @_('ISVOID expr')
     def expr(self, p):
@@ -205,7 +234,10 @@ class CoolParser(Parser):
 
     @_('expr "-" expr')
     def expr(self, p):
-        return Resta(p.lineno,p.expr0,p.expr1)
+        if p.expr0.cast=="Int" and p.expr1.cast=='Int':
+            return Resta(p.lineno,"Int",p.expr0,p.expr1)
+        else:
+            return Resta(p.lineno,"Object",p.expr0,p.expr1)
 
     @_('expr "*" expr')
     def expr(self, p):
@@ -217,23 +249,39 @@ class CoolParser(Parser):
 
     @_('expr "<" expr')
     def expr(self, p):
-        return Menor(p.lineno,p.expr0,p.expr1)
+        if p.expr0.cast=="Int" and p.expr1.cast=='Int':
+            return Menor(p.lineno,"Bool",p.expr0,p.expr1)
+        else:
+            self.errores.append()
+            return Menor(p.lineno,"Object",p.expr0,p.expr1)
 
     @_('expr "/" expr')
     def expr(self, p):
-        return Division(p.lineno,p.expr0,p.expr1)
+        if p.expr0.cast=="Int" and p.expr1.cast=='Int':
+            return Division(p.lineno,"Int",p.expr0,p.expr1)
+        else:
+            return Division(p.lineno,"",p.expr0,p.expr1)
 
     @_('"~" expr')
     def expr(self, p):
-        return Neg(p.lineno,p.expr)
+        if p.expr.cast 
+        return Neg(p.lineno,,p.expr)
 
     @_('expr "=" expr')
     def expr(self, p):
-        return Igual(p.lineno,p.expr0,p.expr1)
+        if p.expr0.cast == p.expr1.cast:
+            return Igual(p.lineno,"Bool",p.expr0,p.expr1)
+        else:
+            self.errores.append()
+            return Igual(p.lineno,"Object",p.expr0,p.expr1)
 
     @_('NOT expr')
     def expr(self, p):
-        return Not(p.lineno,p.expr)
+        if p.expr.cast=="Bool":
+            return Not(p.lineno,"Bool",p.expr)
+        else:
+            self.errores.append()
+            return Not(p.lineno,"Object",p.expr)
 
     @_('"(" expr ")"')
     def expr(self, p):
@@ -241,19 +289,19 @@ class CoolParser(Parser):
 
     @_('OBJECTID')
     def expr(self, p):
-        return Objeto(p.lineno,p.OBJECTID)
+        return Objeto(p.lineno,"Object",p.OBJECTID)
 
     @_('INT_CONST')
     def expr(self, p):
-        return Entero(p.lineno,p.INT_CONST)
+        return Entero(p.lineno,"Int",p.INT_CONST)
 
     @_('STR_CONST')
     def expr(self, p):
-        return String(p.lineno,p.STR_CONST)
+        return String(p.lineno,"String",p.STR_CONST)
 
     @_('BOOL_CONST')
     def expr(self, p):
-        return Booleano(p.lineno,p.BOOL_CONST)
+        return Booleano(p.lineno,"Bool",p.BOOL_CONST)
 
     @_('OBJECTID  ":" TYPEID DARROW expr ";"')
     def ramacase(self, p):

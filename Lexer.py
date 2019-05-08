@@ -5,7 +5,7 @@ import os
 import re
 import ast
 PRACTICA = os.path.join("C:/Users/anton/Desktop/LenguajesProgramacion/practica1/")
-#PRACTICA = os.path.join("C:/Users/USUARIO/lexer")
+PRACTICA = os.path.join("C:/Users/USUARIO/lexer")
 DIR = os.path.join(PRACTICA, "grading")
 FICHEROS = os.listdir(DIR)
 TESTS =  [fich for fich in FICHEROS
