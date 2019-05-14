@@ -39,13 +39,20 @@ class Asignacion(Expresion):
         resultado += self.cuerpo.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+<<<<<<< HEAD
     
     def calculaTipo(self,ambito, arbol_clases, diccionario_metodos):
+=======
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
+>>>>>>> a90a835019090248498f07e749ef6c0244bad0d7
         self.cuerpo.tipo(ambito, arbol_clases, diccionario_metodos)
         cast_nombre = ambito[self.nombre]
         if arbol_clases.subtipo(self.cuerpo.cast, cast_nombre):
             self.cast = 'Object'
+<<<<<<< HEAD
 
+=======
+>>>>>>> a90a835019090248498f07e749ef6c0244bad0d7
 
 @dataclass
 class LlamadaMetodoEstatico(Expresion):
@@ -189,14 +196,14 @@ class Nueva(Expresion):
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
-
-
+    def calculaTipo(self):
+        self.cast = tipo
 @dataclass
 class OperacionBinaria(Expresion):
     izquierda: Expresion
     derecha: Expresion
-
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        pass    
 
 @dataclass
 class Suma(OperacionBinaria):
@@ -318,6 +325,8 @@ class Not(Expresion):
         resultado += self.expr.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.cast = "Bool"
 
 
 @dataclass
@@ -347,6 +356,8 @@ class Objeto(Expresion):
         resultado += f'{(n+2)*" "}{self.nombre}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.cast = "Object"
 
     def tipo(self, ambito, arbol_clases, diccionario_metodos):
         self.cast = "Object"
@@ -376,10 +387,15 @@ class Entero(Expresion):
         resultado += f'{(n+2)*" "}{self.valor}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+<<<<<<< HEAD
     
     def tipo(self, ambito, arbol_clases, diccionario_metodos):
         self.cast = "Int"
 
+=======
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.cast = "Int"
+>>>>>>> a90a835019090248498f07e749ef6c0244bad0d7
 
 @dataclass
 class String(Expresion):
@@ -391,6 +407,8 @@ class String(Expresion):
         resultado += f'{(n+2)*" "}{self.valor}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.cast = "String"
 
     def tipo(self, ambito, arbol_clases, diccionario_metodos):
         self.cast = "String"
@@ -405,10 +423,15 @@ class Booleano(Expresion):
         resultado += f'{(n+2)*" "}{1 if self.valor else 0}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+<<<<<<< HEAD
 
     def tipo(self, ambito, arbol_clases, diccionario_metodos):
         self.cast = "Bool"
 
+=======
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.cast = "Bool"
+>>>>>>> a90a835019090248498f07e749ef6c0244bad0d7
 @dataclass
 class IterableNodo(Nodo):
     secuencia: List = field(default_factory=List)
