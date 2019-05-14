@@ -1,7 +1,7 @@
 # coding: utf-8
 from dataclasses import dataclass, field
 from typing import List
-
+from copy import deepcopy
 
 @dataclass
 class Nodo:
@@ -39,6 +39,12 @@ class Asignacion(Expresion):
         resultado += self.cuerpo.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+    
+    def calculaTipo(self,ambito, arbol_clases, diccionario_metodos):
+        self.cuerpo.tipo(ambito, arbol_clases, diccionario_metodos)
+        cast_nombre = ambito[self.nombre]
+        if arbol_clases.subtipo(self.cuerpo.cast, cast_nombre):
+            self.cast = 'Object'
 
 
 @dataclass
@@ -126,6 +132,12 @@ class Let(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
+        nuevo_ambito = deepcopy(ambito)
+        nuevo_ambito[self.nombre] = self.tipo
+        self.cuerpo.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos)
+        self.cast = self.cuerpo.cast
+
 
 @dataclass
 class Bloque(Expresion):
@@ -169,7 +181,7 @@ class Swicht(Nodo):
         return resultado
 
 @dataclass
-class Nueva(Nodo):
+class Nueva(Expresion):
     tipo: str
     def str(self, n):
         resultado = super().str(n)
@@ -197,6 +209,9 @@ class Suma(OperacionBinaria):
         resultado += self.derecha.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+
+    def calculaTipo(self,ambito, arbol_clases, diccionario_metodos):
+        
 
 
 @dataclass
@@ -316,6 +331,9 @@ class EsNulo(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
+    def tipo(self, ambito, arbol_clases, diccionario_metodos):
+        self.cast = "Object"
+
 
 
 
@@ -330,6 +348,9 @@ class Objeto(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
+    def tipo(self, ambito, arbol_clases, diccionario_metodos):
+        self.cast = "Object"
+
 
 @dataclass
 class NoExpr(Expresion):
@@ -340,6 +361,9 @@ class NoExpr(Expresion):
         resultado += f'{(n)*" "}_no_expr\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+
+    def tipo(self, ambito, arbol_clases, diccionario_metodos):
+        self.cast = "Object"
 
 
 @dataclass
@@ -352,6 +376,9 @@ class Entero(Expresion):
         resultado += f'{(n+2)*" "}{self.valor}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+    
+    def tipo(self, ambito, arbol_clases, diccionario_metodos):
+        self.cast = "Int"
 
 
 @dataclass
@@ -365,6 +392,9 @@ class String(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
+    def tipo(self, ambito, arbol_clases, diccionario_metodos):
+        self.cast = "String"
+
 @dataclass
 class Booleano(Expresion):
     valor: bool
@@ -375,6 +405,9 @@ class Booleano(Expresion):
         resultado += f'{(n+2)*" "}{1 if self.valor else 0}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+
+    def tipo(self, ambito, arbol_clases, diccionario_metodos):
+        self.cast = "Bool"
 
 @dataclass
 class IterableNodo(Nodo):
@@ -403,6 +436,7 @@ class Clase(Nodo):
     nombre_fichero: str
     caracteristicas: List[Caracteristica] = field(default_factory=list)
 
+
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_class\n'
@@ -414,6 +448,18 @@ class Clase(Nodo):
         resultado += '\n'
         resultado += f'{(n+2)*" "})\n'
         return resultado
+
+    def tipo(self, ambito, arbol_clases, diccionario_metodos):
+        nuevo_ambito = deepcopy(ambito)
+        for c in self.caracteristicas:
+            c.calculaTipo(ambito, arbol_clases, diccionario_metodos)
+            if type(c) == Metodo:
+                diccionario_metodos[(self.nombre,c.nombre)]=c.tipo
+            else:
+                nuevo_ambito[c.nombre] = c.tipo
+        for c in self.caracteristicas:
+            c.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos)
+
 
 @dataclass
 class Metodo(Caracteristica):
@@ -427,6 +473,9 @@ class Metodo(Caracteristica):
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         resultado += self.cuerpo.str(n+2)
         return resultado
+
+    def tipo(self, ambito, arbol_clases, diccionario_metodos):
+        
 
 
 class Atributo(Caracteristica):

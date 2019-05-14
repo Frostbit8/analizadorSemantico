@@ -5,7 +5,7 @@ from sly import Parser
 import sys
 import os
 from Clases import *
-DIRECTORIO = os.path.join("C:/Users/anton/Desktop/LenguajesProgramacion/practica2/")
+DIRECTORIO = os.path.join("C:/Users/anton/Desktop/LenguajesProgramacion/practica3/")
 #DIRECTORIO = os.path.join("C:/Users/USUARIO/parser/")
 
 sys.path.append(DIRECTORIO)
@@ -308,6 +308,13 @@ for fich in TESTS:
         g.close()
 
 
+# def mca(a,b)
+#   if a == b:
+#       return a
+#   elif nivel(a) > nivel(b):
+#       return mca(a,padre,b)
+#   else:
+#       return mca(a,b,padre)
 
 
     
