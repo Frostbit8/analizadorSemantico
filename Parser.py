@@ -23,15 +23,17 @@ class ArbolClases():
          self.raiz=raiz
          self.tamano += 1
     def buscaNodo(self,valor):
-        def obtener(self,clave):
-        if self.raiz:
-            res = self._obtener(clave,self.raiz)
-            if res:
-                return res.cargaUtil
-            else:
-                return None
-        else:
+        return buscaAux(self,valor,self.raiz)
+    def buscaAux(self,valor,raiz):
+        if len(raiz.hijos)==0:
             return None
+        for nodo in raiz.hijos:
+            if nodo.dato == valor:
+                return nodo
+            resultado = buscaAux(self,valor,nodo)
+        return resultado
+    def minimoComunAncestro(tipo1,tipo2):
+        pass
     def creaNodo(self,padre,valor):
         if self.raiz:
             self._agregar(clave,valor,self.raiz)
@@ -264,8 +266,7 @@ class CoolParser(Parser):
 
     @_('"~" expr')
     def expr(self, p):
-        if p.expr.cast 
-        return Neg(p.lineno,,p.expr)
+        return Neg(p.lineno,p.expr)
 
     @_('expr "=" expr')
     def expr(self, p):

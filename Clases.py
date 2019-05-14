@@ -39,7 +39,11 @@ class Asignacion(Expresion):
         resultado += self.cuerpo.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
+        self.cuerpo.tipo(ambito, arbol_clases, diccionario_metodos)
+        cast_nombre = ambito[self.nombre]
+        if arbol_clases.subtipo(self.cuerpo.cast, cast_nombre):
+            self.cast = 'Object'
 
 @dataclass
 class LlamadaMetodoEstatico(Expresion):
@@ -177,14 +181,14 @@ class Nueva(Nodo):
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
-
-
+    def calculaTipo(self):
+        self.cast = tipo
 @dataclass
 class OperacionBinaria(Expresion):
     izquierda: Expresion
     derecha: Expresion
-
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        pass    
 
 @dataclass
 class Suma(OperacionBinaria):
@@ -303,6 +307,8 @@ class Not(Expresion):
         resultado += self.expr.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.cast = "Bool"
 
 
 @dataclass
@@ -329,6 +335,8 @@ class Objeto(Expresion):
         resultado += f'{(n+2)*" "}{self.nombre}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.cast = "Object"
 
 
 @dataclass
@@ -352,7 +360,8 @@ class Entero(Expresion):
         resultado += f'{(n+2)*" "}{self.valor}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.cast = "Int"
 
 @dataclass
 class String(Expresion):
@@ -364,6 +373,8 @@ class String(Expresion):
         resultado += f'{(n+2)*" "}{self.valor}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.cast = "String"
 
 @dataclass
 class Booleano(Expresion):
@@ -375,7 +386,8 @@ class Booleano(Expresion):
         resultado += f'{(n+2)*" "}{1 if self.valor else 0}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.cast = "Bool"
 @dataclass
 class IterableNodo(Nodo):
     secuencia: List = field(default_factory=List)
