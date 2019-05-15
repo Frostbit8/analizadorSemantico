@@ -39,7 +39,7 @@ class ArbolClases():
         return resultado
     def minimoComunAncestro(tipo1,tipo2):
         pass
-    def creaNodo(self,padre,valor):
+    def anhade(self,padre,valor):
         if self.raiz:
             self._agregar(clave,valor,self.raiz)
         else:

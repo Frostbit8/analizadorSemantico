@@ -2,6 +2,61 @@
 from dataclasses import dataclass, field
 from typing import List
 from copy import deepcopy
+class Arbol():
+    self.raiz = None
+    self.tamano = 0
+    def __init__ (self, raiz):
+         self.raiz=raiz
+         self.tamano += 1
+    def buscaNodo(self,valor):
+        return buscaAux(valor,self.raiz)
+    def buscaAux(self,valor,raiz):
+        if self.tamano == 0:
+            return None
+        if self.tamano == 1:
+            if self.raiz.valor==valor:
+                return raiz
+            else:
+                return None
+        if len(raiz.hijos)==0:
+            return None
+        for nodo in raiz.hijos:
+            if nodo.dato == valor:
+                return nodo
+            resultado = buscaAux(self,valor,nodo)
+        return resultado
+    def mca(a,b):
+        nodoA = self.buscaNodo(a)
+        nodoB = self.buscaNodo(b)
+        if a==b:
+            return a
+        elif nodoA.nivel > nodoB.nivel
+            return mca(nodoA.padre.valor,b)
+        else:
+            return mca(a,nodoB.padre.valor)
+
+    def anhade(self,padre,valor):
+        if self.raiz == None:
+            self.raiz= Hoja(valor,None)
+            self.tamano = self.tamano + 1
+        else:
+            self.buscaNodo(padre).anhadeHijo(hoja(valor,padre))
+            self.tamano = self.tamano + 1
+class Hoja:
+    self.valor = None 
+    self.padre = None 
+    self.hijos = None 
+    self.nivel = None
+    def __init__ (self, padre, valor):
+        self.valor = valor
+        self.padre = padre
+        self.hijos = list()
+        if self.padre == None:
+            self.nivel=0
+        else:
+            self.nivel = self.padre.nivel
+    def anhadeHijo(self,nodo):
+        self.hijos.append(nodo)
 
 @dataclass
 class Nodo:
@@ -39,20 +94,15 @@ class Asignacion(Expresion):
         resultado += self.cuerpo.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-<<<<<<< HEAD
-    
-    def calculaTipo(self,ambito, arbol_clases, diccionario_metodos):
-=======
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
->>>>>>> a90a835019090248498f07e749ef6c0244bad0d7
-        self.cuerpo.tipo(ambito, arbol_clases, diccionario_metodos)
+        if self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
         cast_nombre = ambito[self.nombre]
         if arbol_clases.subtipo(self.cuerpo.cast, cast_nombre):
             self.cast = 'Object'
-<<<<<<< HEAD
-
-=======
->>>>>>> a90a835019090248498f07e749ef6c0244bad0d7
+        else:
+            self.cast = 'Object'
+            return "ERROR_TIPO"
 
 @dataclass
 class LlamadaMetodoEstatico(Expresion):
@@ -73,6 +123,14 @@ class LlamadaMetodoEstatico(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
+        if self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        for a in self.argumentos:
+            a.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
+        
+        
+
 
 @dataclass
 class LlamadaMetodo(Expresion):
@@ -90,7 +148,11 @@ class LlamadaMetodo(Expresion):
         resultado += f'{(n+2)*" "})\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        if self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        for e in self.argumentos:
+            e.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
 
 @dataclass
 class Condicional(Expresion):
@@ -106,7 +168,14 @@ class Condicional(Expresion):
         resultado += self.falso.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        if self.condicion.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        if self.verdadero.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        if self.falso.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        self.cast=arbol_clases.mca(verdadero.cast,falso.cast)
 
 @dataclass
 class Bucle(Expresion):
@@ -120,7 +189,12 @@ class Bucle(Expresion):
         resultado += self.cuerpo.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        if self.condicion.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        if self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        self.cast=self.cuerpo.cast
 
 @dataclass
 class Let(Expresion):
@@ -142,7 +216,8 @@ class Let(Expresion):
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         nuevo_ambito = deepcopy(ambito)
         nuevo_ambito[self.nombre] = self.tipo
-        self.cuerpo.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos)
+        if self.cuerpo.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
         self.cast = self.cuerpo.cast
 
 
@@ -157,10 +232,18 @@ class Bloque(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         resultado += '\n'
         return resultado
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
+        aux = self.expresiones[0].cast
+        for e in self.expresiones[1:]:
+            if e.calculaTipo(ambito, arbol_clases, diccionario_metodos) == "ERROR_TIPO":
+                return "ERROR_TIPO"
+            aux = arbol_clases.mca(e.cast,aux)
+        self.cast=aux
+
 
 
 @dataclass
-class RamaCase(Nodo):
+class RamaCase(Expresion):
     nombre_variable: str
     tipo: str
     cuerpo: Expresion
@@ -172,10 +255,16 @@ class RamaCase(Nodo):
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         resultado += self.cuerpo.str(n+2)
         return resultado
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
+        if arbol_clases(self.cuerpo.cast,tipo)!=None:
+            self.cast = self.tipo
+        else:
+            return "ERROR_TIPO"
 
 
 @dataclass
-class Swicht(Nodo):
+class Swicht(Expresion):
     expr: Expresion
     casos: List[RamaCase]
 
@@ -186,7 +275,14 @@ class Swicht(Nodo):
         resultado += ''.join([c.str(n+2) for c in self.casos])
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        if self.expr.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        tipoRC = casos[0].cast
+        for rc in casos[1:]:
+            tipoRC = arbol_clases.mca(rc.cast,tipoRC)
+        self.cast = tipoRC
+        
 @dataclass
 class Nueva(Expresion):
     tipo: str
@@ -197,14 +293,21 @@ class Nueva(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
     def calculaTipo(self):
-        self.cast = tipo
+        self.cast = self.tipo
+        
 @dataclass
 class OperacionBinaria(Expresion):
     izquierda: Expresion
     derecha: Expresion
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
-        pass    
-
+        if self.izquierda.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        if self.derecha.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        if arbol_clases.subTipo(izquierda.cast,"Int") and arbol_clases.subTipo(derecha.cast,"Int"):
+            self.cast = arbol_clases.mca(izquierda.cast,derecha.cast)
+        else:
+            return "ERROR_TIPO"
 @dataclass
 class Suma(OperacionBinaria):
     operando: str = '+'
@@ -217,10 +320,7 @@ class Suma(OperacionBinaria):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-    def calculaTipo(self,ambito, arbol_clases, diccionario_metodos):
         
-
-
 @dataclass
 class Resta(OperacionBinaria):
     operando: str = '-'
@@ -273,6 +373,16 @@ class Menor(OperacionBinaria):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        if self.izquierda.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        if self.derecha.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        if arbol_clases.subTipo(izquierda.cast,"Int") and arbol_clases.subTipo(derecha.cast,"Int"):
+            self.cast = "Bool"
+        else:
+            return "ERROR_TIPO"
+
 @dataclass
 class LeIgual(OperacionBinaria):
     operando: str = '<='
@@ -284,6 +394,16 @@ class LeIgual(OperacionBinaria):
         resultado += self.derecha.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
+
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        if self.izquierda.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        if self.derecha.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        if arbol_clases.subTipo(izquierda.cast,"Int") and arbol_clases.subTipo(derecha.cast,"Int"):
+            self.cast = "Bool"
+        else:
+            return "ERROR_TIPO"
 
 
 @dataclass
@@ -297,7 +417,15 @@ class Igual(OperacionBinaria):
         resultado += self.derecha.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        if self.izquierda.calculaTipo(self,ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        if self.derecha.calculaTipo(self,ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        if arbol_clases.mca(izquierda.cast,derecha.cast) != None:
+            self.cast = "Bool"
+        else:
+            self.cast = "ERROR_TIPO"
 
 
 @dataclass
@@ -311,7 +439,9 @@ class Neg(Expresion):
         resultado += self.expr.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
+        self.expr.calculaTipo(self,ambito,arbol_clases,diccionario_metodos)
+        self.cast = self.expr.cast
 
 
 @dataclass
@@ -340,7 +470,7 @@ class EsNulo(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-    def tipo(self, ambito, arbol_clases, diccionario_metodos):
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         self.cast = "Object"
 
 
@@ -357,10 +487,9 @@ class Objeto(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
-        self.cast = "Object"
+        self.cast = ambito[self.nombre]
+        
 
-    def tipo(self, ambito, arbol_clases, diccionario_metodos):
-        self.cast = "Object"
 
 
 @dataclass
@@ -373,7 +502,7 @@ class NoExpr(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-    def tipo(self, ambito, arbol_clases, diccionario_metodos):
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         self.cast = "Object"
 
 
@@ -387,15 +516,8 @@ class Entero(Expresion):
         resultado += f'{(n+2)*" "}{self.valor}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-<<<<<<< HEAD
-    
-    def tipo(self, ambito, arbol_clases, diccionario_metodos):
-        self.cast = "Int"
-
-=======
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         self.cast = "Int"
->>>>>>> a90a835019090248498f07e749ef6c0244bad0d7
 
 @dataclass
 class String(Expresion):
@@ -410,8 +532,6 @@ class String(Expresion):
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         self.cast = "String"
 
-    def tipo(self, ambito, arbol_clases, diccionario_metodos):
-        self.cast = "String"
 
 @dataclass
 class Booleano(Expresion):
@@ -423,15 +543,8 @@ class Booleano(Expresion):
         resultado += f'{(n+2)*" "}{1 if self.valor else 0}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-<<<<<<< HEAD
-
-    def tipo(self, ambito, arbol_clases, diccionario_metodos):
-        self.cast = "Bool"
-
-=======
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         self.cast = "Bool"
->>>>>>> a90a835019090248498f07e749ef6c0244bad0d7
 @dataclass
 class IterableNodo(Nodo):
     secuencia: List = field(default_factory=List)
@@ -443,13 +556,31 @@ class Programa(IterableNodo):
         resultado += f'{" "*n}_program\n'
         resultado += ''.join([c.str(n+2) for c in self.secuencia])
         return resultado
+    
+    def calculaTipo(self, ambito = dict(), arbol_clases = Arbol(), diccionario_metodos = dict()):
+        error = []
+        for s in self.secuencia:
+            self.arbol_clases.anhade(self,s.padre,s.nombre)
+        for s in self.secuencia:
+            error+=s.calculaTipo(ambito,arbol_clases,diccionario_metodos)
+        
+        return error
+        
 
 
 @dataclass
-class Caracteristica(Nodo):
+class Caracteristica(Expresion):
     nombre: str
     tipo: str
     cuerpo: Expresion
+
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
+        if self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            return "ERROR_TIPO"
+        self.cast = self.tipo
+            
+        
+        
 
 
 @dataclass
@@ -472,12 +603,12 @@ class Clase(Nodo):
         resultado += f'{(n+2)*" "})\n'
         return resultado
 
-    def tipo(self, ambito, arbol_clases, diccionario_metodos):
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         nuevo_ambito = deepcopy(ambito)
         for c in self.caracteristicas:
             c.calculaTipo(ambito, arbol_clases, diccionario_metodos)
             if type(c) == Metodo:
-                diccionario_metodos[(self.nombre,c.nombre)]=c.tipo
+                diccionario_metodos[(self.nombre,c.nombre)]=(c.argumentos,c.tipo)
             else:
                 nuevo_ambito[c.nombre] = c.tipo
         for c in self.caracteristicas:
@@ -496,8 +627,6 @@ class Metodo(Caracteristica):
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         resultado += self.cuerpo.str(n+2)
         return resultado
-
-    def tipo(self, ambito, arbol_clases, diccionario_metodos):
         
 
 
