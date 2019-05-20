@@ -257,7 +257,7 @@ class RamaCase(Expresion):
         return resultado
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        if arbol_clases(self.cuerpo.cast,tipo)!=None:
+        if arbol_clases.subtipo(self.cuerpo.cast,tipo)!=None:
             self.cast = self.tipo
         else:
             return "ERROR_TIPO"
@@ -573,11 +573,6 @@ class Caracteristica(Expresion):
     nombre: str
     tipo: str
     cuerpo: Expresion
-
-    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
-        if self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
-            return "ERROR_TIPO"
-        self.cast = self.tipo
             
         
         
@@ -627,7 +622,12 @@ class Metodo(Caracteristica):
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         resultado += self.cuerpo.str(n+2)
         return resultado
-        
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
+        #TODO: primero añadir al ambito_local formales
+        if self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            self.cast = "Object"
+            return "ERROR_TIPO"
+        self.cast = self.tipo   
 
 
 class Atributo(Caracteristica):
@@ -639,3 +639,8 @@ class Atributo(Caracteristica):
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         resultado += self.cuerpo.str(n+2)
         return resultado
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
+        if self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos) == "ERROR_TIPO":
+            self.cast = "Object"
+            return "ERROR_TIPO"
+        self.cast = self.tipo
