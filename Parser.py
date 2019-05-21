@@ -278,7 +278,6 @@ class CoolParser(Parser):
 
 
 for fich in TESTS:
-    print(fich)
     f = open(os.path.join(GRADING, fich), 'r')
     g = open(os.path.join(GRADING, fich + '.out'), 'r')
     lexer = CoolLexer()
@@ -296,8 +295,10 @@ for fich in TESTS:
         resultado = '\n'.join([c for c in j.str(0).split('\n')
                                if c and '#' not in c])
     else:
+        for i in range(len(parser.errores)):
+            parser.errores[i]=fich+": "+parser.errores[i]
         resultado = '\n'.join(parser.errores)
-        resultado += '\n' + "Compilation halted due to lex and parse errors"
+        resultado += '\n' + "Compilation halted due to static semantic errors."
     f.close(), g.close()
     if resultado.lower().strip().split() != bien.lower().strip().split():
         print(f"Revisa el fichero {fich}")
@@ -307,7 +308,8 @@ for fich in TESTS:
         g.write(bien.strip())
         f.close()
         g.close()
-
+    else:
+        print(f"Pasa el fichero {fich}")
 
 
 

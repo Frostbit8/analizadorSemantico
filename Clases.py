@@ -34,7 +34,7 @@ class Arbol():
         return None
     def buscaNodo(self,valor):
         return self.buscaAux(valor,self.raiz)
-    def mca(a,b):
+    def mca(self,a,b):
         nodoA = self.buscaNodo(a)
         nodoB = self.buscaNodo(b)
         if a==b:
@@ -113,7 +113,11 @@ class Asignacion(Expresion):
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         Error = []
         Error += self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos)
-        cast_nombre = ambito[self.nombre]
+        if self.nombre in ambito:
+            cast_nombre = ambito[self.nombre]
+        else:
+            cast_nombre = 'Object'
+            Error += ["Error 25"]
         if arbol_clases.subtipo(cast_nombre,self.cuerpo.cast):
             self.cast = cast_nombre
         else:
@@ -147,7 +151,8 @@ class LlamadaMetodoEstatico(Expresion):
             argumentosT, retorno = diccionario_metodos[(self.cuerpo.cast,self.nombre_metodo)]
         else:
             self.cast="Object"
-            Error += ["Error baddispatch"]
+            #TODO rellenar
+            Error += [f"In call of method {self.nombre_metodo}, type Object of parameter a does not conform to declared type Int."]
             return Error
         if len(argumentosT) != len(self.argumentos):
             Error += ["Error 4"]
@@ -155,7 +160,7 @@ class LlamadaMetodoEstatico(Expresion):
             for i in range(len(self.argumentos)):
                 self.argumentos[i].calculaTipo(ambito,arbol_clases,diccionario_metodos)
                 if self.argumentos[i].cast != argumentosT[i]:
-                    Error += ["Error 5"]
+                    Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {self.argumentos[i]} does not conform to declared type {argumentosT[i]}."]
         if retorno == "SELF_TYPE":
             self.cast=self.cuerpo.cast
         else:
@@ -188,7 +193,8 @@ class LlamadaMetodo(Expresion):
             argumentosT, retorno = diccionario_metodos[(self.cuerpo.cast,self.nombre_metodo)]
         else:
             self.cast="Object"
-            Error += ["Error baddispatch"]
+            #TODO rellenar
+            Error += [f"In call of method {self.nombre_metodo}, type Object of parameter a does not conform to declared type Int."]
             return Error
         if len(argumentosT) != len(self.argumentos):
             Error += ["Error 4"]
@@ -196,7 +202,7 @@ class LlamadaMetodo(Expresion):
             for i in range(len(self.argumentos)):
                 self.argumentos[i].calculaTipo(ambito,arbol_clases,diccionario_metodos)
                 if self.argumentos[i].cast != argumentosT[i]:
-                    Error += ["Error 5"]
+                    Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {self.argumentos[i]} does not conform to declared type {argumentosT[i]}."]
         if retorno == "SELF_TYPE":
             self.cast=self.cuerpo.cast
         else:
@@ -222,7 +228,7 @@ class Condicional(Expresion):
         Error +=  self.condicion.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         Error +=  self.verdadero.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         Error +=  self.falso.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        self.cast=arbol_clases.mca(verdadero.cast,falso.cast)
+        self.cast=arbol_clases.mca(self.verdadero.cast,self.falso.cast)
         return Error
 
 @dataclass
@@ -326,8 +332,10 @@ class Swicht(Expresion):
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         Error = []
         Error += self.expr.calculaTipo(ambito,arbol_clases,diccionario_metodos) 
-        tipoRC = casos[0].cuerpo.cast
-        for rc in casos[1:]:
+        for r in self.casos:
+            r.calculaTipo(ambito,arbol_clases,diccionario_metodos) 
+        tipoRC = self.casos[0].cuerpo.cast
+        for rc in self.casos[1:]:
             tipoRC = arbol_clases.mca(rc.cuerpo.cast,tipoRC)
         self.cast = tipoRC
         return Error
@@ -358,7 +366,7 @@ class OperacionBinaria(Expresion):
             self.cast = arbol_clases.mca(self.izquierda.cast,self.derecha.cast)
         else:
             self.cast = "Object"
-            Error += ["Error 1"]
+            Error += [f"non-Int arguments: {self.izquierda.cast} + {self.derecha.cast}"]
         return Error
 @dataclass
 class Suma(OperacionBinaria):
@@ -480,7 +488,7 @@ class Igual(OperacionBinaria):
             self.cast = "Bool"
         else:
             self.cast = "Object"
-            Error += ["Error 6"]
+            Error += ["Illegal comparison with a basic type."]
         return Error
 
 
@@ -515,7 +523,7 @@ class Not(Expresion):
         return resultado
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         Error = []
-        Error += self.expr.calculaTipo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
+        Error += self.expr.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         self.cast = "Bool"
         return Error
 
@@ -556,7 +564,7 @@ class Objeto(Expresion):
             self.cast = ambito[self.nombre]
         else:
             self.cast = "Object"
-            Error+=f"Undeclared identifier {self.nombre}."
+            Error+=[f"Undeclared identifier {self.nombre}."]
         return Error
 
 
@@ -664,13 +672,15 @@ class Programa(IterableNodo):
         for s in self.secuencia:
             s.calculaMetodosAtributos(diccionario_metodos,diccionario_atributos)
         for s in self.secuencia:
-            arbol_clases.anhade(s.padre,s.nombre)
+            if arbol_clases.buscaNodo(s.padre) == None:
+                error += ["Error 15"]
+            else:
+                arbol_clases.anhade(s.padre,s.nombre)
         for s in arbol_clases.recorre():
             p,n = s
             propaga(p,n,diccionario_metodos,diccionario_atributos)
         for s in self.secuencia:
             error += s.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        print(error)
         return error
         
 
