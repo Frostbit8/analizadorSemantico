@@ -725,7 +725,6 @@ class Atributo(Caracteristica):
         resultado += self.cuerpo.str(n+2)
         return resultado
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
-        #TODO: comprobar inicializador con el cuerpo
         Error = []
         Error +=  self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos)
         if self.cuerpo.cast != "_no_type":
