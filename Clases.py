@@ -43,7 +43,16 @@ class Arbol():
             return mca(nodoA.padre.valor,b)
         else:
             return mca(a,nodoB.padre.valor)
-
+    def subtipo(self,hijo,padre):
+        return self.subtipoAUX(hijo,self.buscaNodo(padre))
+    def subtipoAUX(self,hijo,padre):
+        for h in padre.hijos:
+            if h.tipo == hijo:
+                return True
+            else:
+                if self.subtipoAUX(hijo,h):
+                    return True
+        return False
     def anhade(self,padre,valor):
         p = self.buscaNodo(padre)
         if p==None:
@@ -308,7 +317,7 @@ class Nueva(Expresion):
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-    def calculaTipo(self):
+    def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         #TODO: clase no existe
         self.cast = self.tipo
         return []
