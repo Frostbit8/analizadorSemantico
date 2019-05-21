@@ -37,13 +37,17 @@ class Arbol():
     def mca(self,a,b):
         nodoA = self.buscaNodo(a)
         nodoB = self.buscaNodo(b)
+        if nodoA == None or nodoB == None:
+            raise Exception(f'No existe padre {a} {b}')
         if a==b:
             return a
         elif nodoA.nivel > nodoB.nivel:
-            return mca(nodoA.padre.valor,b)
+            return self.mca(nodoA.padre.valor,b)
         else:
-            return mca(a,nodoB.padre.valor)
+            return self.mca(a,nodoB.padre.valor)
     def subtipo(self,hijo,padre):
+        if self.buscaNodo(padre) == None:
+            return False
         if hijo == padre:
             return True
         return self.subtipoAUX(hijo,self.buscaNodo(padre))
@@ -58,10 +62,14 @@ class Arbol():
     def anhade(self,padre,valor):
         p = self.buscaNodo(padre)
         if p==None:
-            print(padre)
-            raise Exception('No existe padre')
-        p.anhadeHijo(Hoja(p,valor))
-        self.tamano = self.tamano + 1
+            raise Exception(f'No existe padre {padre}')
+        anade = True
+        for h in p.hijos:
+            if h.valor == valor:
+                anade = False
+        if anade:
+            p.anhadeHijo(Hoja(p,valor))
+            self.tamano = self.tamano + 1
     def recorreAux(self,origen,resultado):
         if len(origen.hijos)==0:
             return resultado
@@ -118,11 +126,11 @@ class Asignacion(Expresion):
         else:
             cast_nombre = 'Object'
             Error += ["Error 25"]
-        if arbol_clases.subtipo(cast_nombre,self.cuerpo.cast):
+        if arbol_clases.subtipo(self.cuerpo.cast,cast_nombre):
             self.cast = cast_nombre
         else:
             self.cast = 'Object'
-            Error += ["Error 2"]
+            Error += [f"Type {self.cuerpo.cast} of assigned expression does not conform to declared type {cast_nombre} of identifier {self.nombre}."]
         return Error
 
 @dataclass
@@ -160,7 +168,7 @@ class LlamadaMetodoEstatico(Expresion):
             for i in range(len(self.argumentos)):
                 self.argumentos[i].calculaTipo(ambito,arbol_clases,diccionario_metodos)
                 if self.argumentos[i].cast != argumentosT[i]:
-                    Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {self.argumentos[i]} does not conform to declared type {argumentosT[i]}."]
+                    Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {self.argumentos[i].nombre} does not conform to declared type {argumentosT[i]}."]
         if retorno == "SELF_TYPE":
             self.cast=self.cuerpo.cast
         else:
@@ -194,7 +202,7 @@ class LlamadaMetodo(Expresion):
         else:
             self.cast="Object"
             #TODO rellenar
-            Error += [f"In call of method {self.nombre_metodo}, type Object of parameter a does not conform to declared type Int."]
+            Error += [f"Dispatch to undefined method {self.nombre_metodo}."]
             return Error
         if len(argumentosT) != len(self.argumentos):
             Error += ["Error 4"]
@@ -541,7 +549,7 @@ class EsNulo(Expresion):
 
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         Error = []
-        Error += self.expr.calculaTipo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
+        Error += self.expr.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         self.cast = "Object"
         return Error
 
@@ -664,23 +672,29 @@ class Programa(IterableNodo):
         diccionario_metodos[("IO", "in_int")] = ([],"Int")
         diccionario_metodos[("String", "length")] = ([],"Int")
         diccionario_metodos[("String", "concat")] = (["String"],"String")
-        diccionario_metodos[("String", "in_int")] = (["Int", "Int"],"Int")
+        diccionario_metodos[("String", "substr")] = (["Int", "Int"],"String")
         propaga("Object","Int",diccionario_metodos,diccionario_atributos)
         propaga("Object","Bool",diccionario_metodos,diccionario_atributos)
         propaga("Object","String",diccionario_metodos,diccionario_atributos)
         propaga("Object","IO",diccionario_metodos,diccionario_atributos)
         for s in self.secuencia:
             s.calculaMetodosAtributos(diccionario_metodos,diccionario_atributos)
+        repetir = False
         for s in self.secuencia:
             if arbol_clases.buscaNodo(s.padre) == None:
-                error += ["Error 15"]
+                repetir+=1
             else:
                 arbol_clases.anhade(s.padre,s.nombre)
+        while repetir!=0:
+            for s in self.secuencia:
+                if arbol_clases.buscaNodo(s.padre) != None:
+                    arbol_clases.anhade(s.padre,s.nombre)
+            repetir-=1
         for s in arbol_clases.recorre():
             p,n = s
             propaga(p,n,diccionario_metodos,diccionario_atributos)
         for s in self.secuencia:
-            error += s.calculaTipo(ambito,arbol_clases,diccionario_metodos)
+            error += s.calculaTipo(ambito,arbol_clases,diccionario_metodos,diccionario_atributos)
         return error
         
 
@@ -712,15 +726,17 @@ class Clase(Nodo):
         resultado += f'{(n+2)*" "})\n'
         return resultado
 
-    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos,diccionario_atributos):
         Error = []
         nuevo_ambito = deepcopy(ambito)
         for c in self.caracteristicas:
-            #c.calculaTipo(ambito, arbol_clases, diccionario_metodos)
             if type(c) == Metodo:
                 diccionario_metodos[(self.nombre,c.nombre)]=(c.formales,c.tipo)
             else:
-                nuevo_ambito[c.nombre] = c.tipo
+                if (self.padre,c.nombre) not in diccionario_atributos:
+                    nuevo_ambito[c.nombre] = c.tipo
+                else: 
+                    Error += [f"Attribute {c.nombre} is an attribute of an inherited class."]
         for c in self.caracteristicas:
             Error += c.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos)
         return Error
@@ -773,6 +789,8 @@ class Atributo(Caracteristica):
         return resultado
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         Error = []
+        if self.nombre == "self":
+            Error += ["'self' cannot be the name of an attribute."]
         Error +=  self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos)
         if not arbol_clases.subtipo(self.tipo,self.cuerpo.cast):
             self.cast = "Object"
