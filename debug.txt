@@ -65,15 +65,15 @@ Rule 60    l_ramacase -> ramacase
 Unused terminals:
 
     LINECOMMENT
-    ERROR
+    NUMBER
     ERROR5
+    ERROR3
     ERROR4
     ERROR1
     ERROR6
-    ERROR3
-    COMENT
-    NUMBER
     ERROR2
+    ERROR
+    COMENT
 
 Terminals, with rules where they appear:
 

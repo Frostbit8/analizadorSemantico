@@ -278,6 +278,7 @@ class CoolParser(Parser):
 
 
 for fich in TESTS:
+    print(fich)
     f = open(os.path.join(GRADING, fich), 'r')
     g = open(os.path.join(GRADING, fich + '.out'), 'r')
     lexer = CoolLexer()
@@ -288,7 +289,7 @@ for fich in TESTS:
     bien = ''.join([c for c in g.readlines() if c and '#' not in c])
     entrada = f.read()
     j = parser.parse(lexer.tokenize(entrada))
-    j.calculaTipos()
+    parser.errores += j.calculaTipos()
     for t0 in lexer1.tokenize(entrada):
         pass
     if j and not parser.errores:
@@ -306,6 +307,7 @@ for fich in TESTS:
         g.write(bien.strip())
         f.close()
         g.close()
+
 
 
 

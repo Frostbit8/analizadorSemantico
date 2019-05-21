@@ -44,10 +44,12 @@ class Arbol():
         else:
             return mca(a,nodoB.padre.valor)
     def subtipo(self,hijo,padre):
+        if hijo == padre:
+            return True
         return self.subtipoAUX(hijo,self.buscaNodo(padre))
     def subtipoAUX(self,hijo,padre):
         for h in padre.hijos:
-            if h.tipo == hijo:
+            if h.valor == hijo:
                 return True
             else:
                 if self.subtipoAUX(hijo,h):
@@ -56,6 +58,7 @@ class Arbol():
     def anhade(self,padre,valor):
         p = self.buscaNodo(padre)
         if p==None:
+            print(padre)
             raise Exception('No existe padre')
         p.anhadeHijo(Hoja(p,valor))
         self.tamano = self.tamano + 1
@@ -111,8 +114,8 @@ class Asignacion(Expresion):
         Error = []
         Error += self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos)
         cast_nombre = ambito[self.nombre]
-        if arbol_clases.subtipo(self.cuerpo.cast, cast_nombre):
-            self.cast = 'Object'
+        if arbol_clases.subtipo(cast_nombre,self.cuerpo.cast):
+            self.cast = cast_nombre
         else:
             self.cast = 'Object'
             Error += ["Error 2"]
@@ -140,8 +143,23 @@ class LlamadaMetodoEstatico(Expresion):
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         Error = []
         Error +=  self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        for a in self.argumentos:
-            a.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
+        if (self.cuerpo.cast,self.nombre_metodo) in diccionario_metodos:
+            argumentosT, retorno = diccionario_metodos[(self.cuerpo.cast,self.nombre_metodo)]
+        else:
+            self.cast="Object"
+            Error += ["Error baddispatch"]
+            return Error
+        if len(argumentosT) != len(self.argumentos):
+            Error += ["Error 4"]
+        else:
+            for i in range(len(self.argumentos)):
+                self.argumentos[i].calculaTipo(ambito,arbol_clases,diccionario_metodos)
+                if self.argumentos[i].cast != argumentosT[i]:
+                    Error += ["Error 5"]
+        if retorno == "SELF_TYPE":
+            self.cast=self.cuerpo.cast
+        else:
+            self.cast=retorno
         return Error
         
         
@@ -166,14 +184,19 @@ class LlamadaMetodo(Expresion):
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         Error = []
         Error +=  self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        argumentosT, retorno = diccionario_metodos[(self.cuerpo.cast,self.nombre_metodo)]
+        if (self.cuerpo.cast,self.nombre_metodo) in diccionario_metodos:
+            argumentosT, retorno = diccionario_metodos[(self.cuerpo.cast,self.nombre_metodo)]
+        else:
+            self.cast="Object"
+            Error += ["Error baddispatch"]
+            return Error
         if len(argumentosT) != len(self.argumentos):
-            Error += "Error4"
+            Error += ["Error 4"]
         else:
             for i in range(len(self.argumentos)):
                 self.argumentos[i].calculaTipo(ambito,arbol_clases,diccionario_metodos)
-                if self.argumentos[i].cast != argumentosT[i].cast:
-                    Error += "Error5"
+                if self.argumentos[i].cast != argumentosT[i]:
+                    Error += ["Error 5"]
         if retorno == "SELF_TYPE":
             self.cast=self.cuerpo.cast
         else:
@@ -243,6 +266,7 @@ class Let(Expresion):
         nuevo_ambito = deepcopy(ambito)
         nuevo_ambito[self.nombre] = self.tipo
         Error +=  self.cuerpo.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos) 
+        Error +=  self.inicializacion.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos) 
         self.cast = self.cuerpo.cast
         return Error
 
@@ -330,8 +354,8 @@ class OperacionBinaria(Expresion):
         Error=[]
         Error += self.izquierda.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         Error += self.derecha.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        if arbol_clases.subTipo(izquierda.cast,"Int") and arbol_clases.subTipo(derecha.cast,"Int"):
-            self.cast = arbol_clases.mca(izquierda.cast,derecha.cast)
+        if arbol_clases.subtipo(self.izquierda.cast,"Int") and arbol_clases.subtipo(self.derecha.cast,"Int"):
+            self.cast = arbol_clases.mca(self.izquierda.cast,self.derecha.cast)
         else:
             self.cast = "Object"
             Error += ["Error 1"]
@@ -405,11 +429,11 @@ class Menor(OperacionBinaria):
         Error = []
         Error += self.izquierda.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         Error +=  self.derecha.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        if arbol_clases.subTipo(izquierda.cast,"Int") and arbol_clases.subTipo(derecha.cast,"Int"):
+        if arbol_clases.subtipo(self.izquierda.cast,"Int") and arbol_clases.subtipo(self.derecha.cast,"Int"):
             self.cast = "Bool"
         else:
             self.cast = "Object"
-            Error += ["Error3"]
+            Error += ["Error 3"]
         return Error
 
 @dataclass
@@ -428,11 +452,11 @@ class LeIgual(OperacionBinaria):
         Error = []
         Error += self.izquierda.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         Error +=  self.derecha.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        if arbol_clases.subTipo(izquierda.cast,"Int") and arbol_clases.subTipo(derecha.cast,"Int"):
+        if arbol_clases.subtipo(self.izquierda.cast,"Int") and arbol_clases.subtipo(self.derecha.cast,"Int"):
             self.cast = "Bool"
         else:
             self.cast = "Object"
-            Error += ["Error3"]
+            Error += ["Error 3"]
         return Error
 
 
@@ -456,7 +480,7 @@ class Igual(OperacionBinaria):
             self.cast = "Bool"
         else:
             self.cast = "Object"
-            Error += "Error6"
+            Error += ["Error 6"]
         return Error
 
 
@@ -527,8 +551,13 @@ class Objeto(Expresion):
         return resultado
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         #Error si no esta en el ambito¿?
-        self.cast = ambito[self.nombre]
-        return []
+        Error = []
+        if self.nombre in ambito:
+            self.cast = ambito[self.nombre]
+        else:
+            self.cast = "Object"
+            Error+=f"Undeclared identifier {self.nombre}."
+        return Error
 
 
 
@@ -613,7 +642,7 @@ class Programa(IterableNodo):
             if s.nombre == "Main":
                 encontrado = True
         if not encontrado:
-            return ["Error"]
+            return ["Error 12"]
         arbol_clases.anhade("Object","Int")
         arbol_clases.anhade("Object","Bool")
         arbol_clases.anhade("Object","String")
@@ -636,13 +665,12 @@ class Programa(IterableNodo):
             s.calculaMetodosAtributos(diccionario_metodos,diccionario_atributos)
         for s in self.secuencia:
             arbol_clases.anhade(s.padre,s.nombre)
-        print(arbol_clases.recorre())
         for s in arbol_clases.recorre():
             p,n = s
             propaga(p,n,diccionario_metodos,diccionario_atributos)
         for s in self.secuencia:
             error += s.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        
+        print(error)
         return error
         
 
@@ -678,7 +706,7 @@ class Clase(Nodo):
         Error = []
         nuevo_ambito = deepcopy(ambito)
         for c in self.caracteristicas:
-            c.calculaTipo(ambito, arbol_clases, diccionario_metodos)
+            #c.calculaTipo(ambito, arbol_clases, diccionario_metodos)
             if type(c) == Metodo:
                 diccionario_metodos[(self.nombre,c.nombre)]=(c.formales,c.tipo)
             else:
@@ -736,12 +764,9 @@ class Atributo(Caracteristica):
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         Error = []
         Error +=  self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos)
-        if self.cuerpo.cast != "_no_type":
-            if not arbol_clases.subtipo(self.cuerpo.cast,self.tipo):
-                self.cast = "Object"
-                Error += ["Error7"]
-            else:
-                self.cast = self.tipo
+        if not arbol_clases.subtipo(self.tipo,self.cuerpo.cast):
+            self.cast = "Object"
+            Error += ["Error 7"]
         else:
             self.cast = self.tipo
         return Error
