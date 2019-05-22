@@ -133,7 +133,8 @@ class Asignacion(Expresion):
             self.cast = cast_nombre
         else:
             self.cast = 'Object'
-            Error += [f"Type {self.cuerpo.cast} of assigned expression does not conform to declared type {cast_nombre} of identifier {self.nombre}."]
+            if cast_nombre != "SELF_TYPE":
+                Error += [f"Type {self.cuerpo.cast} of assigned expression does not conform to declared type {cast_nombre} of identifier {self.nombre}."]
         return Error
 
 @dataclass
@@ -314,9 +315,12 @@ class Let(Expresion):
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         Error = []
         nuevo_ambito = deepcopy(ambito)
+        if self.nombre == "self":
+            Error+=[f"'self' cannot be bound in a 'let' expression."]
         nuevo_ambito[self.nombre] = self.tipo
         Error +=  self.cuerpo.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos) 
         Error +=  self.inicializacion.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos) 
+
         self.cast = self.cuerpo.cast
         return Error
 
@@ -702,7 +706,7 @@ class Programa(IterableNodo):
             if s.nombre == "Main":
                 encontrado = True
         if not encontrado:
-            return ["Error 12"]
+            return [f"Class Main is not defined."]
         arbol_clases.anhade("Object","Int")
         arbol_clases.anhade("Object","Bool")
         arbol_clases.anhade("Object","String")
@@ -723,14 +727,12 @@ class Programa(IterableNodo):
         propaga("Object","IO",diccionario_metodos,diccionario_atributos)
         for s in self.secuencia:
             s.calculaMetodosAtributos(diccionario_metodos,diccionario_atributos)
-
         aux = []
         for s in self.secuencia:
             if s.nombre in aux:
                 error += [f"Class {s.nombre} was previously defined."]
             else:
                 aux.append(s.nombre)
-
         repetir = False
         for s in self.secuencia:
             if arbol_clases.buscaNodo(s.padre) == None:
@@ -781,9 +783,10 @@ class Clase(Nodo):
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos,diccionario_atributos):
         Error = []
 
-        if self.nombre == 'Int' or self.nombre == 'String' or self.nombre == 'Bool' or self.nombre == 'IO' or self.nombre == 'Object':
+        if self.nombre == 'Int' or self.nombre == 'String' or self.nombre == 'Bool' or self.nombre == 'IO' or self.nombre == 'Object' or self.nombre == 'SELF_TYPE':
             Error += [f"Redefinition of basic class {self.nombre}."]
             return Error
+        
         nuevo_ambito = deepcopy(ambito)
         nuevo_ambito["SELF_TYPE"]=self.nombre
         nuevo_ambito["self"]="SELF_TYPE"
@@ -837,6 +840,11 @@ class Metodo(Caracteristica):
             else:
                 aux.append(e.nombre_variable)
         for e in self.formales:
+            if e.nombre_variable == "self":
+                Error += [f"'self' cannot be the name of a formal parameter."]
+            if e.tipo == "SELF_TYPE":
+                Error += [f"Formal parameter {e.nombre_variable} cannot have type SELF_TYPE."]
+        for e in self.formales:
             nuevo_ambito[e.nombre_variable] = e.tipo
         Error += self.cuerpo.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos)
         self.cast = self.tipo   
@@ -863,7 +871,7 @@ class Atributo(Caracteristica):
                 self.cast = self.tipo
             else:
                 self.cast = "Object"
-                Error += ["Error 7"]
+                Error += ["Cannot assign to 'self'."]
         else:
             self.cast = self.tipo
         return Error
