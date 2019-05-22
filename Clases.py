@@ -89,9 +89,11 @@ class Nodo:
     def str(self, n):
         return f'{n*" "}#{self.linea}\n'
 
+class Expresion(Nodo):
+    cast: str 
 
 @dataclass
-class Formal(Nodo):
+class Formal(Expresion):
     nombre_variable: str
     tipo: str
     def str(self, n):
@@ -100,10 +102,9 @@ class Formal(Nodo):
         resultado += f'{(n+2)*" "}{self.nombre_variable}\n'
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         return resultado
-
-
-class Expresion(Nodo):
-    cast: str 
+    def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
+        self.cast = self.tipo
+        return []
 
 
 @dataclass
@@ -155,22 +156,29 @@ class LlamadaMetodoEstatico(Expresion):
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         Error = []
         Error +=  self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
+        for e in self.argumentos:
+            Error +=  e.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         if (self.cuerpo.cast,self.nombre_metodo) in diccionario_metodos:
             argumentosT, retorno = diccionario_metodos[(self.cuerpo.cast,self.nombre_metodo)]
         else:
             self.cast="Object"
-            #TODO rellenar
-            Error += [f"In call of method {self.nombre_metodo}, type Object of parameter a does not conform to declared type Int."]
+            Error += [f"Expression type {self.cuerpo.cast} does not conform to declared static dispatch type {self.cuerpo.cast}."]
             return Error
         if len(argumentosT) != len(self.argumentos):
+            self.cast = 'Object'
             Error += ["Error 4"]
         else:
             for i in range(len(self.argumentos)):
                 self.argumentos[i].calculaTipo(ambito,arbol_clases,diccionario_metodos)
-                if self.argumentos[i].cast != argumentosT[i]:
-                    Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {self.argumentos[i].nombre} does not conform to declared type {argumentosT[i]}."]
+                if self.argumentos[i].cast != argumentosT[i].tipo:
+                    if type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre != 'self':
+                        Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
+                    elif type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre == 'self':
+                        Error += [f"In call of method {self.nombre_metodo}, type SELF_TYPE of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
+                    else:
+                        Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
         if retorno == "SELF_TYPE":
-            self.cast=self.cuerpo.cast
+            self.cast=ambito["SELF_TYPE"]
         else:
             self.cast=retorno
         return Error
@@ -197,11 +205,12 @@ class LlamadaMetodo(Expresion):
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         Error = []
         Error +=  self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
+        for e in self.argumentos:
+            Error +=  e.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         if (self.cuerpo.cast,self.nombre_metodo) in diccionario_metodos:
             argumentosT, retorno = diccionario_metodos[(self.cuerpo.cast,self.nombre_metodo)]
         else:
             self.cast="Object"
-            #TODO rellenar
             Error += [f"Dispatch to undefined method {self.nombre_metodo}."]
             return Error
         if len(argumentosT) != len(self.argumentos):
@@ -209,8 +218,13 @@ class LlamadaMetodo(Expresion):
         else:
             for i in range(len(self.argumentos)):
                 self.argumentos[i].calculaTipo(ambito,arbol_clases,diccionario_metodos)
-                if self.argumentos[i].cast != argumentosT[i]:
-                    Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {self.argumentos[i]} does not conform to declared type {argumentosT[i]}."]
+                if self.argumentos[i].cast != argumentosT[i].tipo:
+                    if type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre != 'self':
+                        Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
+                    elif type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre == 'self':
+                        Error += [f"In call of method {self.nombre_metodo}, type SELF_TYPE of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
+                    else:
+                        Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
         if retorno == "SELF_TYPE":
             self.cast=self.cuerpo.cast
         else:
@@ -568,7 +582,9 @@ class Objeto(Expresion):
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         #Error si no esta en el ambito¿?
         Error = []
-        if self.nombre in ambito:
+        if self.nombre == 'self':
+            self.cast = ambito["SELF_TYPE"]
+        elif self.nombre in ambito:
             self.cast = ambito[self.nombre]
         else:
             self.cast = "Object"
@@ -666,13 +682,13 @@ class Programa(IterableNodo):
         diccionario_metodos[("Object", "abort")] = ([],"Object")
         diccionario_metodos[("Object", "type_name")] = ([],"String")
         diccionario_metodos[("Object", "copy")] = ([],"SELF_TYPE")
-        diccionario_metodos[("IO", "out_string")] = (["String"],"SELF_TYPE")
-        diccionario_metodos[("IO", "out_int")] = (["Int"],"SELF_TYPE")
+        diccionario_metodos[("IO", "out_string")] = ([Formal(0,"out_string","String")],"SELF_TYPE")
+        diccionario_metodos[("IO", "out_int")] = ([Formal(0,"out_int","Int")],"SELF_TYPE")
         diccionario_metodos[("IO", "in_string")] = ([],"String")
         diccionario_metodos[("IO", "in_int")] = ([],"Int")
         diccionario_metodos[("String", "length")] = ([],"Int")
-        diccionario_metodos[("String", "concat")] = (["String"],"String")
-        diccionario_metodos[("String", "substr")] = (["Int", "Int"],"String")
+        diccionario_metodos[("String", "concat")] = ([Formal(0,"concat","String")],"String")
+        diccionario_metodos[("String", "substr")] = ([Formal(0,"substr","Int"), Formal(0,"substr","Int")],"String")
         propaga("Object","Int",diccionario_metodos,diccionario_atributos)
         propaga("Object","Bool",diccionario_metodos,diccionario_atributos)
         propaga("Object","String",diccionario_metodos,diccionario_atributos)
@@ -729,6 +745,8 @@ class Clase(Nodo):
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos,diccionario_atributos):
         Error = []
         nuevo_ambito = deepcopy(ambito)
+        nuevo_ambito["SELF_TYPE"]=self.nombre
+        nuevo_ambito["self"]="SELF_TYPE"
         for c in self.caracteristicas:
             if type(c) == Metodo:
                 diccionario_metodos[(self.nombre,c.nombre)]=(c.formales,c.tipo)
@@ -744,7 +762,7 @@ class Clase(Nodo):
     def calculaMetodosAtributos(self,diccionario_metodos,diccionario_atributos):
          for c in self.caracteristicas:
             if type(c) == Metodo:
-                diccionario_metodos[(self.nombre,c.nombre)]=([f.tipo for f in c.formales],c.tipo)
+                diccionario_metodos[(self.nombre,c.nombre)]=(c.formales,c.tipo)
             else:
                 diccionario_atributos[(self.nombre,c.nombre)] = c.tipo
 def propaga(padre, hijo,diccionario_metodos,diccionario_atributos):
@@ -768,8 +786,6 @@ class Metodo(Caracteristica):
         return resultado
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         nuevo_ambito = deepcopy(ambito)
-        nuevo_ambito["self"]="SELF_TYPE"
-        nuevo_ambito["__name__"]="SELF_TYPE"
         for e in self.formales:
             nuevo_ambito[e.nombre_variable] = e.tipo
         Error = []
