@@ -124,9 +124,11 @@ class Asignacion(Expresion):
         Error += self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos)
         if self.nombre in ambito:
             cast_nombre = ambito[self.nombre]
+            
         else:
             cast_nombre = 'Object'
             Error += ["Error 25"]
+        
         if arbol_clases.subtipo(self.cuerpo.cast,cast_nombre):
             self.cast = cast_nombre
         else:
@@ -161,8 +163,15 @@ class LlamadaMetodoEstatico(Expresion):
         if (self.cuerpo.cast,self.nombre_metodo) in diccionario_metodos:
             argumentosT, retorno = diccionario_metodos[(self.cuerpo.cast,self.nombre_metodo)]
         else:
-            self.cast="Object"
-            Error += [f"Expression type {self.cuerpo.cast} does not conform to declared static dispatch type {self.cuerpo.cast}."]
+            aux = self.cuerpo.cast
+            if self.cuerpo.cast == "SELF_TYPE":
+                aux = ambito["SELF_TYPE"]
+            if self.cuerpo.cast == self.clase:
+                self.cast="Object"
+                Error += [f"Expression type {self.cuerpo.cast} does not conform to declared static dispatch type {diccionario_metodos[(self.clase,self.nombre_metodo)][1]}."]
+            else:
+                self.cast="Object"
+                Error += [f"Expression type {aux} does not conform to declared static dispatch type {diccionario_metodos[(self.clase,self.nombre_metodo)][1]}."]
             return Error
         if len(argumentosT) != len(self.argumentos):
             self.cast = 'Object'
@@ -207,8 +216,11 @@ class LlamadaMetodo(Expresion):
         Error +=  self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         for e in self.argumentos:
             Error +=  e.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        if (self.cuerpo.cast,self.nombre_metodo) in diccionario_metodos:
-            argumentosT, retorno = diccionario_metodos[(self.cuerpo.cast,self.nombre_metodo)]
+        aux = self.cuerpo.cast
+        if self.cuerpo.cast == "SELF_TYPE":
+            aux = ambito["SELF_TYPE"]
+        if (aux,self.nombre_metodo) in diccionario_metodos:
+            argumentosT, retorno = diccionario_metodos[(aux,self.nombre_metodo)]
         else:
             self.cast="Object"
             Error += [f"Dispatch to undefined method {self.nombre_metodo}."]
@@ -250,7 +262,15 @@ class Condicional(Expresion):
         Error +=  self.condicion.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         Error +=  self.verdadero.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         Error +=  self.falso.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        self.cast=arbol_clases.mca(self.verdadero.cast,self.falso.cast)
+        if self.condicion.cast != 'Bool':
+            Error += ["Errror 1324"]
+        aux1 = self.verdadero.cast
+        aux2 = self.falso.cast
+        if self.verdadero.cast == "SELF_TYPE":
+            aux1=ambito["SELF_TYPE"]
+        if self.falso.cast == "SELF_TYPE":
+            aux2=ambito["SELF_TYPE"]
+        self.cast=arbol_clases.mca(aux1,aux2)
         return Error
 
 @dataclass
@@ -269,7 +289,9 @@ class Bucle(Expresion):
         Error = []
         Error += self.condicion.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         Error += self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        self.cast=self.cuerpo.cast
+        if self.condicion.cast != 'Bool':
+            Error += [f"Loop condition does not have type Bool."]
+        self.cast="Object"
         return Error
 
 @dataclass
@@ -355,7 +377,13 @@ class Swicht(Expresion):
         Error = []
         Error += self.expr.calculaTipo(ambito,arbol_clases,diccionario_metodos) 
         for r in self.casos:
-            r.calculaTipo(ambito,arbol_clases,diccionario_metodos) 
+            r.calculaTipo(ambito,arbol_clases,diccionario_metodos)
+        Aux = []
+        for r in self.casos:
+            if r.tipo in Aux:
+                Error += [f"Duplicate branch {r.tipo} in case statement."]
+            else:
+                Aux += [r.tipo]
         tipoRC = self.casos[0].cuerpo.cast
         for rc in self.casos[1:]:
             tipoRC = arbol_clases.mca(rc.cuerpo.cast,tipoRC)
@@ -582,9 +610,9 @@ class Objeto(Expresion):
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         #Error si no esta en el ambito¿?
         Error = []
-        if self.nombre == 'self':
-            self.cast = ambito["SELF_TYPE"]
-        elif self.nombre in ambito:
+        #if self.nombre == 'self':
+        #    self.cast = ambito["SELF_TYPE"]
+        if self.nombre in ambito:
             self.cast = ambito[self.nombre]
         else:
             self.cast = "Object"
@@ -605,7 +633,7 @@ class NoExpr(Expresion):
         return resultado
 
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
-        self.cast = "Object"
+        self.cast = "_no_type"
         return []
 
 
@@ -704,7 +732,7 @@ class Programa(IterableNodo):
         while repetir!=0:
             for s in self.secuencia:
                 if arbol_clases.buscaNodo(s.padre) != None:
-                    arbol_clases.anhade(s.padre,s.nombre)
+                        arbol_clases.anhade(s.padre,s.nombre)
             repetir-=1
         for s in arbol_clases.recorre():
             p,n = s
@@ -744,9 +772,16 @@ class Clase(Nodo):
 
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos,diccionario_atributos):
         Error = []
+
+        if self.nombre == 'Int' or self.nombre == 'String' or self.nombre == 'Bool' or self.nombre == 'IO' or self.nombre == 'Object':
+            Error += [f"Redefinition of basic class {self.nombre}."]
+            return Error
         nuevo_ambito = deepcopy(ambito)
         nuevo_ambito["SELF_TYPE"]=self.nombre
         nuevo_ambito["self"]="SELF_TYPE"
+        for p,a in diccionario_atributos:
+            if p==self.padre:
+                nuevo_ambito[a] = diccionario_atributos[p,a]
         for c in self.caracteristicas:
             if type(c) == Metodo:
                 diccionario_metodos[(self.nombre,c.nombre)]=(c.formales,c.tipo)
@@ -786,9 +821,15 @@ class Metodo(Caracteristica):
         return resultado
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         nuevo_ambito = deepcopy(ambito)
+        Error = []
+        aux = []
+        for e in self.formales:
+            if e.nombre_variable in aux:
+                Error += [f"Formal parameter {e.nombre_variable} is multiply defined."]
+            else:
+                aux.append(e.nombre_variable)
         for e in self.formales:
             nuevo_ambito[e.nombre_variable] = e.tipo
-        Error = []
         Error += self.cuerpo.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos)
         self.cast = self.tipo   
         return Error
@@ -807,10 +848,14 @@ class Atributo(Caracteristica):
         Error = []
         if self.nombre == "self":
             Error += ["'self' cannot be the name of an attribute."]
+        
         Error +=  self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos)
-        if not arbol_clases.subtipo(self.tipo,self.cuerpo.cast):
-            self.cast = "Object"
-            Error += ["Error 7"]
+        if self.cuerpo.cast != '_no_type':
+            if arbol_clases.subtipo(self.cuerpo.cast,self.tipo):
+                self.cast = self.tipo
+            else:
+                self.cast = "Object"
+                Error += ["Error 7"]
         else:
             self.cast = self.tipo
         return Error
