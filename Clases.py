@@ -39,8 +39,8 @@ class Arbol():
         nodoB = self.buscaNodo(b)
         if nodoA == None or nodoB == None:
             raise Exception(f'No existe padre {a} {b}')
-        if a==b:
-            return a
+        if nodoA.valor==nodoB.valor:
+            return nodoA.valor
         elif nodoA.nivel > nodoB.nivel:
             return self.mca(nodoA.padre.valor,b)
         else:
@@ -628,10 +628,7 @@ class Objeto(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
-        #Error si no esta en el ambito¿?
         Error = []
-        #if self.nombre == 'self':
-        #    self.cast = ambito["SELF_TYPE"]
         if self.nombre in ambito:
             self.cast = ambito[self.nombre]
         else:

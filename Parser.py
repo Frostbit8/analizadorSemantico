@@ -16,7 +16,7 @@ FICHEROS = os.listdir(GRADING)
 TESTS = [fich for fich in FICHEROS
          if os.path.isfile(os.path.join(GRADING, fich))
          and fich.endswith(".test")]
-
+#TESTS = ["lubtest.test"]
 class CoolParser(Parser):
     nombre_fichero = "Salida"
     tokens = CoolLexer.tokens
