@@ -181,10 +181,12 @@ class LlamadaMetodoEstatico(Expresion):
                 self.argumentos[i].calculaTipo(ambito,arbol_clases,diccionario_metodos)
                 if self.argumentos[i].cast != argumentosT[i].tipo:
                     if type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre != 'self':
-                        Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
+                        pass
                     elif type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre == 'self':
+                        print("2")
                         Error += [f"In call of method {self.nombre_metodo}, type SELF_TYPE of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
                     else:
+                        print("3")
                         Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
         
         
@@ -234,10 +236,12 @@ class LlamadaMetodo(Expresion):
                 self.argumentos[i].calculaTipo(ambito,arbol_clases,diccionario_metodos)
                 if self.argumentos[i].cast != argumentosT[i].tipo:
                     if type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre != 'self':
-                        Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
+                        pass
                     elif type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre == 'self':
+                        print("2n")
                         Error += [f"In call of method {self.nombre_metodo}, type SELF_TYPE of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
                     else:
+                        print("3n")
                         Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
         if retorno == "SELF_TYPE":
             self.cast=self.cuerpo.cast
