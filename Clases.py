@@ -166,8 +166,6 @@ class LlamadaMetodoEstatico(Expresion):
         for e in self.argumentos:
             Error +=  e.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         if not arbol_clases.subtipo(self.cuerpo.cast, self.clase):
-            print(self.cuerpo.cast)
-            print(self.clase)
             Error += [f"Expression type {self.cuerpo.cast} does not conform to declared static dispatch type {self.clase}."]
             
 
@@ -183,10 +181,8 @@ class LlamadaMetodoEstatico(Expresion):
                     if type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre != 'self':
                         pass
                     elif type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre == 'self':
-                        print("2")
                         Error += [f"In call of method {self.nombre_metodo}, type SELF_TYPE of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
                     else:
-                        print("3")
                         Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
         
         
@@ -238,7 +234,6 @@ class LlamadaMetodo(Expresion):
                     if type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre != 'self':
                         pass
                     elif type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre == 'self':
-                        print("2n")
                         Error += [f"In call of method {self.nombre_metodo}, type SELF_TYPE of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
                     else:
                         if(self.argumentos[i].cast != "SELF_TYPE"):
