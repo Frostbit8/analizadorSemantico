@@ -723,6 +723,14 @@ class Programa(IterableNodo):
         propaga("Object","IO",diccionario_metodos,diccionario_atributos)
         for s in self.secuencia:
             s.calculaMetodosAtributos(diccionario_metodos,diccionario_atributos)
+
+        aux = []
+        for s in self.secuencia:
+            if s.nombre in aux:
+                error += [f"Class {s.nombre} was previously defined."]
+            else:
+                aux.append(s.nombre)
+
         repetir = False
         for s in self.secuencia:
             if arbol_clases.buscaNodo(s.padre) == None:
