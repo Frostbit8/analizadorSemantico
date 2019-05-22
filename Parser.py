@@ -16,7 +16,7 @@ FICHEROS = os.listdir(GRADING)
 TESTS = [fich for fich in FICHEROS
          if os.path.isfile(os.path.join(GRADING, fich))
          and fich.endswith(".test")]
-         
+
 class CoolParser(Parser):
     nombre_fichero = "Salida"
     tokens = CoolLexer.tokens
@@ -277,8 +277,10 @@ class CoolParser(Parser):
             temp = '"emptyprogram.test", line 0: syntax error at or near EOF'
         self.errores.append(temp)
 
-
+pasan = 0
+noPasan = 0
 for fich in TESTS:
+
     f = open(os.path.join(GRADING, fich), 'r')
     g = open(os.path.join(GRADING, fich + '.out'), 'r')
     lexer = CoolLexer()
@@ -303,6 +305,7 @@ for fich in TESTS:
     f.close(), g.close()
     if resultado.lower().strip().split() != bien.lower().strip().split():
         print(f"Revisa el fichero {fich}")
+        noPasan+=1
         f = open(os.path.join(GRADING, fich)+'.nuestro', 'w')
         g = open(os.path.join(GRADING, fich)+'.bien', 'w')
         f.write(resultado.strip())
@@ -310,8 +313,8 @@ for fich in TESTS:
         f.close()
         g.close()
     else:
-        print(f"Pasa el fichero {fich}")
-
+        pasan+=1
+print(f"pasan: {pasan}, no pasan: {noPasan}")
 
 
 

@@ -122,6 +122,8 @@ class Asignacion(Expresion):
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         Error = []
         Error += self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos)
+        if self.nombre == 'self':
+            Error += ["Cannot assign to 'self'."]
         if self.nombre in ambito:
             cast_nombre = ambito[self.nombre]
             
@@ -320,8 +322,10 @@ class Let(Expresion):
         nuevo_ambito[self.nombre] = self.tipo
         Error +=  self.cuerpo.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos) 
         Error +=  self.inicializacion.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos) 
-
+        if not arbol_clases.subtipo(self.inicializacion.cast,self.tipo) and self.inicializacion.cast != "SELF_TYPE" and self.inicializacion.cast != "_no_type" and self.tipo != "SELF_TYPE":
+            Error += [f"Inferred type {self.inicializacion.cast} of initialization of {self.nombre} does not conform to identifier's declared type {self.tipo}."]
         self.cast = self.cuerpo.cast
+
         return Error
 
 
@@ -361,6 +365,7 @@ class RamaCase(Expresion):
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         Error = []
         Error +=  self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos) 
+        self.cuerpo.cast = self.tipo
         self.cast = self.tipo
         return Error
 
@@ -541,8 +546,11 @@ class Igual(OperacionBinaria):
         if self.izquierda.cast == self.derecha.cast:
             self.cast = "Bool"
         else:
-            self.cast = "Object"
-            Error += ["Illegal comparison with a basic type."]
+            if (self.izquierda.cast=='Bool' or self.izquierda.cast=='String' or self.izquierda.cast=='Int') and (self.derecha.cast=='Bool' or self.derecha.cast=='String' or self.derecha.cast=='Int'):
+                self.cast = "Object"
+                Error += ["Illegal comparison with a basic type."]
+            else:
+                self.cast = "Bool"
         return Error
 
 
@@ -596,7 +604,7 @@ class EsNulo(Expresion):
     def calculaTipo(self, ambito, arbol_clases, diccionario_metodos):
         Error = []
         Error += self.expr.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        self.cast = "Object"
+        self.cast = self.expr.cast
         return Error
 
 
@@ -786,7 +794,15 @@ class Clase(Nodo):
         if self.nombre == 'Int' or self.nombre == 'String' or self.nombre == 'Bool' or self.nombre == 'IO' or self.nombre == 'Object' or self.nombre == 'SELF_TYPE':
             Error += [f"Redefinition of basic class {self.nombre}."]
             return Error
-        
+        if self.padre == "SELF_TYPE":
+            Error += [f"Class {self.nombre} cannot inherit class SELF_TYPE."]
+            return Error
+        if arbol_clases.buscaNodo(self.padre) == None:
+            Error += [f"Class {self.nombre} inherits from an undefined class {self.padre}."]
+            return Error
+        if self.padre == 'Int' or self.padre == 'String' or self.padre == 'Bool':
+            Error += [f"Class {self.nombre} cannot inherit class {self.padre}."]
+            return Error
         nuevo_ambito = deepcopy(ambito)
         nuevo_ambito["SELF_TYPE"]=self.nombre
         nuevo_ambito["self"]="SELF_TYPE"
@@ -795,7 +811,19 @@ class Clase(Nodo):
                 nuevo_ambito[a] = diccionario_atributos[p,a]
         for c in self.caracteristicas:
             if type(c) == Metodo:
-                diccionario_metodos[(self.nombre,c.nombre)]=(c.formales,c.tipo)
+                if (self.padre,c.nombre) not in diccionario_metodos:
+                    diccionario_metodos[(self.nombre,c.nombre)]=(c.formales,c.tipo)
+                else:
+                    if len(c.formales)==len(diccionario_metodos[(self.padre,c.nombre)][0]):
+                        distintos = False
+                        for i in range(len(c.formales)):
+                            if c.formales[i].tipo != diccionario_metodos[(self.padre,c.nombre)][0][i].tipo:
+                                distintos = True
+                                Error += [f"In redefined method {c.nombre}, parameter type {c.formales[i].tipo} is different from original type {diccionario_metodos[(self.padre,c.nombre)][0][i].tipo}"]
+                        if not distintos:
+                            diccionario_metodos[(self.nombre,c.nombre)]=(c.formales,c.tipo)
+                    else:
+                        Error += [f"Incompatible number of formal parameters in redefined method {c.nombre}."]
             else:
                 if (self.padre,c.nombre) not in diccionario_atributos:
                     nuevo_ambito[c.nombre] = c.tipo
@@ -848,6 +876,8 @@ class Metodo(Caracteristica):
             nuevo_ambito[e.nombre_variable] = e.tipo
         Error += self.cuerpo.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos)
         self.cast = self.tipo   
+        if not arbol_clases.subtipo(self.cuerpo.cast,self.cast) and self.cuerpo.cast != "SELF_TYPE":
+            Error += [f"Inferred return type {self.cuerpo.cast} of method {self.nombre} does not conform to declared return type {self.cast}."]
         return Error
 
 @dataclass
@@ -869,9 +899,6 @@ class Atributo(Caracteristica):
         if self.cuerpo.cast != '_no_type':
             if arbol_clases.subtipo(self.cuerpo.cast,self.tipo):
                 self.cast = self.tipo
-            else:
-                self.cast = "Object"
-                Error += ["Cannot assign to 'self'."]
         else:
             self.cast = self.tipo
         return Error
