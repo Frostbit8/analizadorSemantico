@@ -412,9 +412,14 @@ class Nueva(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
-        #TODO: clase no existe
+        Error = []
+        aux = self.tipo
+        if self.tipo == "SELF_TYPE":
+            aux = ambito["SELF_TYPE"]
+        if arbol_clases.buscaNodo(aux)==None:
+            Error += [f"'new' used with undefined class {aux}."]
         self.cast = self.tipo
-        return []
+        return Error
         
 @dataclass
 class OperacionBinaria(Expresion):
@@ -815,7 +820,10 @@ class Clase(Nodo):
         for c in self.caracteristicas:
             if type(c) == Metodo:
                 if (self.padre,c.nombre) not in diccionario_metodos:
-                    diccionario_metodos[(self.nombre,c.nombre)]=(c.formales,c.tipo)
+                    if arbol_clases.buscaNodo(c.tipo)==None and c.tipo!="SELF_TYPE":
+                        Error+=[f"Undefined return type {c.tipo} in method {c.nombre}."]
+                    else:
+                        diccionario_metodos[(self.nombre,c.nombre)]=(c.formales,c.tipo)
                 else:
                     if len(c.formales)==len(diccionario_metodos[(self.padre,c.nombre)][0]):
                         distintos = False
@@ -885,9 +893,7 @@ class Metodo(Caracteristica):
         aux2 = self.cast
         if self.cast == "SELF_TYPE":
             aux2 = ambito["SELF_TYPE"]
-        if not arbol_clases.subtipo(aux,aux2):
-            print(aux)
-            print(aux2)
+        if not arbol_clases.subtipo(aux,aux2) and not arbol_clases.buscaNodo(aux)==None:
             Error += [f"Inferred return type {aux} of method {self.nombre} does not conform to declared return type {aux2}."]
         return Error
 
