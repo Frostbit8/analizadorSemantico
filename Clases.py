@@ -241,8 +241,8 @@ class LlamadaMetodo(Expresion):
                         print("2n")
                         Error += [f"In call of method {self.nombre_metodo}, type SELF_TYPE of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
                     else:
-                        print("3n")
-                        Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
+                        if(self.argumentos[i].cast != "SELF_TYPE"):
+                            Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
         if retorno == "SELF_TYPE":
             self.cast=self.cuerpo.cast
         else:
