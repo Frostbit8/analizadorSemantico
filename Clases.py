@@ -123,7 +123,9 @@ class Asignacion(Expresion):
         Error = []
         Error += self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos)
         if self.nombre == 'self':
+            self.cast = ambito["SELF_TYPE"]
             Error += ["Cannot assign to 'self'."]
+            return Error
         if self.nombre in ambito:
             cast_nombre = ambito[self.nombre]
             
@@ -163,19 +165,14 @@ class LlamadaMetodoEstatico(Expresion):
         Error +=  self.cuerpo.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         for e in self.argumentos:
             Error +=  e.calculaTipo(ambito,arbol_clases,diccionario_metodos)
-        if (self.cuerpo.cast,self.nombre_metodo) in diccionario_metodos:
-            argumentosT, retorno = diccionario_metodos[(self.cuerpo.cast,self.nombre_metodo)]
-        else:
-            aux = self.cuerpo.cast
-            if self.cuerpo.cast == "SELF_TYPE":
-                aux = ambito["SELF_TYPE"]
-            if self.cuerpo.cast == self.clase:
-                self.cast="Object"
-                Error += [f"Expression type {self.cuerpo.cast} does not conform to declared static dispatch type {diccionario_metodos[(self.clase,self.nombre_metodo)][1]}."]
-            else:
-                self.cast="Object"
-                Error += [f"Expression type {aux} does not conform to declared static dispatch type {diccionario_metodos[(self.clase,self.nombre_metodo)][1]}."]
-            return Error
+        if not arbol_clases.subtipo(self.cuerpo.cast, self.clase):
+            print(self.cuerpo.cast)
+            print(self.clase)
+            Error += [f"Expression type {self.cuerpo.cast} does not conform to declared static dispatch type {self.clase}."]
+            
+
+        if (self.clase,self.nombre_metodo) in diccionario_metodos:
+            argumentosT, retorno = diccionario_metodos[(self.clase,self.nombre_metodo)]    
         if len(argumentosT) != len(self.argumentos):
             self.cast = 'Object'
             Error += ["Error 4"]
@@ -189,6 +186,8 @@ class LlamadaMetodoEstatico(Expresion):
                         Error += [f"In call of method {self.nombre_metodo}, type SELF_TYPE of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
                     else:
                         Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
+        
+        
         if retorno == "SELF_TYPE":
             self.cast=ambito["SELF_TYPE"]
         else:
@@ -875,9 +874,17 @@ class Metodo(Caracteristica):
         for e in self.formales:
             nuevo_ambito[e.nombre_variable] = e.tipo
         Error += self.cuerpo.calculaTipo(nuevo_ambito,arbol_clases,diccionario_metodos)
-        self.cast = self.tipo   
-        if not arbol_clases.subtipo(self.cuerpo.cast,self.cast) and self.cuerpo.cast != "SELF_TYPE":
-            Error += [f"Inferred return type {self.cuerpo.cast} of method {self.nombre} does not conform to declared return type {self.cast}."]
+        self.cast = self.tipo
+        aux =self.cuerpo.cast
+        if self.cuerpo.cast == "SELF_TYPE":
+            aux = ambito["SELF_TYPE"]
+        aux2 = self.cast
+        if self.cast == "SELF_TYPE":
+            aux2 = ambito["SELF_TYPE"]
+        if not arbol_clases.subtipo(aux,aux2):
+            print(aux)
+            print(aux2)
+            Error += [f"Inferred return type {aux} of method {self.nombre} does not conform to declared return type {aux2}."]
         return Error
 
 @dataclass
