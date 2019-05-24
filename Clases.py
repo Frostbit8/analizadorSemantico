@@ -166,7 +166,9 @@ class LlamadaMetodoEstatico(Expresion):
         for e in self.argumentos:
             Error +=  e.calculaTipo(ambito,arbol_clases,diccionario_metodos)
         if not arbol_clases.subtipo(self.cuerpo.cast, self.clase):
+            self.cast="Object"
             Error += [f"Expression type {self.cuerpo.cast} does not conform to declared static dispatch type {self.clase}."]
+            return Error
             
 
         if (self.clase,self.nombre_metodo) in diccionario_metodos:
@@ -234,10 +236,12 @@ class LlamadaMetodo(Expresion):
                     if type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre != 'self':
                         pass
                     elif type(self.argumentos[i]) == Objeto and self.argumentos[i].nombre == 'self':
-                        Error += [f"In call of method {self.nombre_metodo}, type SELF_TYPE of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
+                        if argumentosT[i].tipo != ambito["SELF_TYPE"]:
+                            Error += [f"In call of method {self.nombre_metodo}, type SELF_TYPE of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
                     else:
                         if(self.argumentos[i].cast != "SELF_TYPE"):
                             Error += [f"In call of method {self.nombre_metodo}, type {self.argumentos[i].cast} of parameter {argumentosT[i].nombre_variable} does not conform to declared type {argumentosT[i].tipo}."]
+                
         if retorno == "SELF_TYPE":
             self.cast=self.cuerpo.cast
         else:
@@ -883,6 +887,8 @@ class Metodo(Caracteristica):
         if self.cuerpo.cast == "SELF_TYPE":
             aux = ambito["SELF_TYPE"]
         aux2 = self.cast
+        if self.tipo == "SELF_TYPE" and self.cuerpo.cast != "SELF_TYPE":
+                Error += [f"Inferred return type {self.cuerpo.cast} of method foo does not conform to declared return type {self.tipo}."]
         if self.cast == "SELF_TYPE":
             aux2 = ambito["SELF_TYPE"]
         if not arbol_clases.subtipo(aux,aux2) and not arbol_clases.buscaNodo(aux)==None:
