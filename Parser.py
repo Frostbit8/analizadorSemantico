@@ -1,5 +1,5 @@
 # coding: utf-8
-
+# Realizado por XinZhe Jin y José Carlos Tollar García
 from Lexer import CoolLexer
 from sly import Parser
 import sys

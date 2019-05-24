@@ -1,4 +1,5 @@
 # coding: utf-8
+# Realizado por XinZhe Jin y José Carlos Tollar García
 from dataclasses import dataclass, field
 from typing import List
 from copy import deepcopy
