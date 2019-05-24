@@ -30,7 +30,7 @@ class Arbol():
         for nodo in origen.hijos:
             n = self.buscaAux(valor,nodo)
             if n is not None and self.buscaAux(valor,nodo).valor == valor:
-                return nodo
+                return self.buscaAux(valor,nodo)
         return None
     def buscaNodo(self,valor):
         return self.buscaAux(valor,self.raiz)
@@ -74,7 +74,7 @@ class Arbol():
         if len(origen.hijos)==0:
             return resultado
         for nodo in origen.hijos:
-            resultado+=[(nodo.padre.valor,nodo.valor)]
+            resultado+=[(origen.valor,nodo.valor)]
         for nodo in origen.hijos:
             self.recorreAux(nodo,resultado)
         return resultado
@@ -367,7 +367,8 @@ class RamaCase(Expresion):
     def calculaTipo(self,ambito,arbol_clases,diccionario_metodos):
         Error = []
         Error +=  self.cuerpo.calculaTipo(ambito, arbol_clases, diccionario_metodos) 
-        self.cuerpo.cast = self.tipo
+        if type(self.cuerpo) == Objeto:
+            self.cuerpo.cast = self.tipo
         self.cast = self.tipo
         return Error
 
@@ -733,10 +734,6 @@ class Programa(IterableNodo):
         diccionario_metodos[("String", "length")] = ([],"Int")
         diccionario_metodos[("String", "concat")] = ([Formal(0,"concat","String")],"String")
         diccionario_metodos[("String", "substr")] = ([Formal(0,"substr","Int"), Formal(0,"substr","Int")],"String")
-        propaga("Object","Int",diccionario_metodos,diccionario_atributos)
-        propaga("Object","Bool",diccionario_metodos,diccionario_atributos)
-        propaga("Object","String",diccionario_metodos,diccionario_atributos)
-        propaga("Object","IO",diccionario_metodos,diccionario_atributos)
         for s in self.secuencia:
             s.calculaMetodosAtributos(diccionario_metodos,diccionario_atributos)
         aux = []
